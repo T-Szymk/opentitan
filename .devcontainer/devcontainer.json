@@ -1,0 +1,37 @@
+{
+  "name": "opentitan_darjeeling_1_0_0",
+  //"build": {
+  //  "dockerfile": "Dockerfile",
+  //  "context"   : ".."
+  //},
+  "image": "tomszymkowiak/darjeeling_1_0_0:1.1",
+  "mounts":[
+    {"source": "${localWorkspaceFolder}", "target": "/app/opentitan", "type": "bind"}
+  ],
+  "workspaceFolder": "/app/opentitan",
+  "remoteUser": "root",
+ 
+  // Env variables to be set in container
+  "containerEnv": {
+    "HOME": "/home"
+  },
+ 
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "docker.cpus": "8",
+        "slang.path": "/tools/slang-server/build/bin/slang-server",
+        "C_Cpp.default.includePath": [
+          "${workspaceRoot}/**/*.h"
+        ]
+      },
+      "extensions": [
+        "hudson-river-trading.vscode-slang",
+        "ms-vscode.cpptools-extension-pack",
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "bitwisecook.tcl"
+      ]
+    }
+  }  
+}
