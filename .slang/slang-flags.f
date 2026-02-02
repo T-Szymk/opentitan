@@ -1,1 +1,1 @@
-# insert flags here
++incdir+hw/ip/prim/rtl/
