@@ -30,7 +30,8 @@
         "ms-vscode.cpptools-extension-pack",
         "ms-python.python",
         "ms-python.vscode-pylance",
-        "bitwisecook.tcl"
+        "bitwisecook.tcl",
+        "anthropic.claude-code"
       ]
     }
   }  
