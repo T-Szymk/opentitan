@@ -31,7 +31,8 @@
         "ms-python.python",
         "ms-python.vscode-pylance",
         "bitwisecook.tcl",
-        "anthropic.claude-code"
+        "anthropic.claude-code",
+        "eamodio.gitlens"
       ]
     }
   }  
