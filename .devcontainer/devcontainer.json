@@ -30,7 +30,7 @@
         "ms-vscode.cpptools-extension-pack",
         "ms-python.python",
         "ms-python.vscode-pylance",
-        "bitwisecook.tcl",
+        "rashwell.tcl",
         "anthropic.claude-code",
         "eamodio.gitlens"
       ]
