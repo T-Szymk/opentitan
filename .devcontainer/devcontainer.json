@@ -15,6 +15,7 @@
   "containerEnv": {
     "HOME": "/home",
     "QUESTA_ROOT": "/opt/questa",
+    "QUESTA_HOME":
     "LM_LICENSE_FILE": "${localEnv:LM_LICENSE_FILE}",
     "SALT_LICENSE_SERVER": "${localEnv:SALT_LICENSE_SERVER}"
   },
