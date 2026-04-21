@@ -1,0 +1,55 @@
+{
+  "name": "opentitan_darjeeling_1_0_0",
+
+  "image": "tomszymkowiak/darjeeling_1_0_0:1.2",
+  "mounts":[
+    {"source": "${localWorkspaceFolder}",                       "target": "/app/opentitan",  "type": "bind"},
+    {"source": "/tmp/.X11-unix",                                "target": "/tmp/.X11-unix",  "type": "bind"},
+    // make sure source matches directory containing /bin for questa version on host
+    {"source": "/opt/tuni/mentor/questaone_2025.3_1/questasim", "target": "/opt/questa",     "type": "bind"},
+    {"source": "${localEnv:SSH_AUTH_SOCK}",            "target": "/ssh-agent",               "type": "bind"}
+  ],
+  "workspaceFolder": "/app/opentitan",
+  "remoteUser": "root",
+ 
+  // Env variables to be set in container
+  "containerEnv": {
+    "QUESTA_HOME": "/opt/questa",
+    "LM_LICENSE_FILE": "${localEnv:LM_LICENSE_FILE}",
+    "SALT_LICENSE_SERVER": "${localEnv:SALT_LICENSE_SERVER}"
+  },
+
+  "remoteEnv": {
+    "PATH": "/opt/questa/questasim/linux_x86_64:${containerEnv:PATH}"
+  },
+
+  "runArgs": ["--network=host"],
+
+  "customizations": {
+    "vscode": {
+      
+      "extensions": [
+        "hudson-river-trading.vscode-slang",
+        "ms-vscode.cpptools-extension-pack",
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "rashwell.tcl",
+        "anthropic.claude-code",
+        "eamodio.gitlens",
+        "charliermarsh.ruff",
+        "rust-lang.rust-analyzer",
+        "hbohlin.vhdl-ls"
+      ],
+
+      "settings": {
+        "docker.cpus": "8",
+        "slang.path": "/tools/slang-server/build/bin/slang-server",
+        "C_Cpp.default.includePath": [
+          "${workspaceRoot}/**/*.h"
+        ],
+        "vhdl_ls.enable": false,
+        "python.analysis.typeCheckingMode": "standard"
+      }
+    }
+  } 
+}
