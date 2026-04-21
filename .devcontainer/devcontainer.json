@@ -1,7 +1,7 @@
 {
   "name": "opentitan_darjeeling_1_0_0",
 
-  "image": "tomszymkowiak/darjeeling_1_0_0:1.1",
+  "image": "tomszymkowiak/darjeeling_1_0_0:1.2",
   "mounts":[
     {"source": "${localWorkspaceFolder}",                       "target": "/app/opentitan",  "type": "bind"},
     {"source": "/tmp/.X11-unix",                                "target": "/tmp/.X11-unix",  "type": "bind"},
@@ -14,13 +14,13 @@
  
   // Env variables to be set in container
   "containerEnv": {
-    "QUESTA_ROOT": "/opt/questa",
+    "QUESTA_HOME": "/opt/questa",
     "LM_LICENSE_FILE": "${localEnv:LM_LICENSE_FILE}",
     "SALT_LICENSE_SERVER": "${localEnv:SALT_LICENSE_SERVER}"
   },
 
   "remoteEnv": {
-    "PATH": "/opt/questa/bin:${containerEnv:PATH}"
+    "PATH": "/opt/questa/questasim/linux_x86_64:${containerEnv:PATH}"
   },
 
   "runArgs": ["--network=host"],
