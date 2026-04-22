@@ -29,6 +29,7 @@
     "vscode": {
       
       "extensions": [
+        "laktak.hjson",
         "hudson-river-trading.vscode-slang",
         "ms-vscode.cpptools-extension-pack",
         "ms-python.python",
