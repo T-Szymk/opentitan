@@ -575,7 +575,7 @@ def parse_args():
 
     waveg.add_argument("--waves",
                        "-w",
-                       choices=["fsdb", "shm", "vpd", "vcd", "evcd", "fst"],
+                       choices=["fsdb", "shm", "vpd", "vcd", "evcd", "fst", "wlf"],
                        help=("Enable dumping of waves. It takes an "
                              "argument to pick the desired wave format."
                              "By default, dumping waves is not enabled."))

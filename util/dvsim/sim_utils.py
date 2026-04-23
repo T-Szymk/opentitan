@@ -119,6 +119,9 @@ def get_job_runtime(log_text: List, tool: str) -> Tuple[float, str]:
         return xcelium_job_runtime(log_text)
     elif tool == 'vcs':
         return vcs_job_runtime(log_text)
+    elif tool == 'questa':
+        from questa import Questa
+        return Questa.get_job_runtime(log_text)
     else:
         raise NotImplementedError(f"{tool} is unsupported for job runtime "
                                   "extraction.")

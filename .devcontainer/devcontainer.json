@@ -3,11 +3,11 @@
 
   "image": "tomszymkowiak/darjeeling_1_0_0:1.2",
   "mounts":[
-    {"source": "${localWorkspaceFolder}",                       "target": "/app/opentitan",  "type": "bind"},
-    {"source": "/tmp/.X11-unix",                                "target": "/tmp/.X11-unix",  "type": "bind"},
+    {"source": "${localWorkspaceFolder}",              "target": "/app/opentitan",  "type": "bind"},
+    {"source": "/tmp/.X11-unix",                       "target": "/tmp/.X11-unix",  "type": "bind"},
     // make sure source matches directory containing /bin for questa version on host
-    {"source": "/opt/tuni/mentor/questaone_2025.3_1/questasim", "target": "/opt/questa",     "type": "bind"},
-    {"source": "${localEnv:SSH_AUTH_SOCK}",            "target": "/ssh-agent",               "type": "bind"}
+    {"source": "/opt/tuni/mentor/questaone_2025.3_1/", "target": "/opt/questa",     "type": "bind"},
+    {"source": "${localEnv:SSH_AUTH_SOCK}",            "target": "/ssh-agent",      "type": "bind"}
   ],
   "workspaceFolder": "/app/opentitan",
   "remoteUser": "root",

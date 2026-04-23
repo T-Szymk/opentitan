@@ -17,7 +17,7 @@
               ]
 
   run_opts:   [ "-outdir {build_dir}/qrun.out",
-                "-sv_seed {seed}",
+                "-sv_seed {svseed}",
                 // dv_macros.svh has a macro printing null using %0d
                 // format specifier, Questa throws an error on this
                 // we demote this error in Questa
@@ -32,7 +32,7 @@
               ]
 
   // Supported wave dumping formats (in order of preference).
-  supported_wave_formats: []
+  supported_wave_formats: ["wlf"]
 
   // Default tcl script used when running the sim. Override if needed.
   run_script: "{dv_root}/tools/questa/sim.tcl"
@@ -50,19 +50,19 @@
   // It is constructed by the tool itself.
   cov_merge_dir:    "{scratch_path}/cov_report"
   cov_merge_db_dir: ""
-  cov_merge_cmd:    ""
+  cov_merge_cmd:    "{job_prefix} vcover merge"
   cov_merge_opts:   []
 
   // Generate covreage reports in text as well as html.
   cov_report_dir:       "{scratch_path}/cov_report"
-  cov_report_cmd:       ""
+  cov_report_cmd:       "{job_prefix} vcover report"
   cov_report_opts:      []
   cov_report_txt:   "{cov_report_dir}/dashboard.txt"
 
   // Analyzing coverage - this is done by invoking --cov-analyze switch. It opens up the
   // GUI for visual analysis.
   cov_analyze_dir:  "{scratch_path}/cov_analyze"
-  cov_analyze_cmd:  ""
+  cov_analyze_cmd:  "{job_prefix} vsim"  // or the Questa coverage GUI
   cov_analyze_opts: []
 
   // By default, collect all coverage metrics.
@@ -78,11 +78,25 @@
       name: questa_gui
       is_sim_mode: 1
       build_opts: []
+      run_opts: ["-gui", "-vsim.nosva"]
+    }
+    {
+      name: questa_gui_debug
+      // TODO: Add additional debug options for Questa.
+      is_sim_mode: 1
+      build_opts: []
       run_opts: ["-gui"]
     }
     {
       name: questa_waves
       is_sim_mode: 1
+      run_opts: ["-wlf {run_dir_name}_{seed}.wlf", "-do 'log -r /*/tb/*'"]
+    }
+    {
+      name: questa_waves_off
+      is_sim_mode: 1
+      build_opts: []
+      run_opts: []
     }
     // TODO Questa coverage only currently supported in the GUI with no merging
     {
