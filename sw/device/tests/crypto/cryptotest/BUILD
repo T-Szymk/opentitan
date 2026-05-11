@@ -233,6 +233,61 @@ RSA_TESTVECTOR_TARGETS = [
         "sha256_mgf1sha256",
         "sha512_mgf1sha512",
     ]
+] + [
+    "//sw/host/cryptotest/testvectors/data:wycheproof_rsa_{}_{}_{}_sign.json".format(
+        padding_mode,
+        security_level,
+        hash_suffix,
+    )
+    for security_level, hash_suffixes in [
+        (
+            2048,
+            [
+                "sha256",
+                "sha384",
+                "sha512",
+            ],
+        ),
+        (
+            3072,
+            [
+                "sha256",
+                "sha512",
+            ],
+        ),
+        (
+            4096,
+            [
+                "sha256",
+                "sha512",
+            ],
+        ),
+    ]
+    for hash_suffix in hash_suffixes
+    for padding_mode in [
+        "pkcs1_1.5",
+        "pss",
+    ]
+] + [
+    "//sw/host/cryptotest/testvectors/data:wycheproof_rsa_{}_{}_{}_sign.json".format(
+        padding_mode,
+        security_level,
+        hash_suffix,
+    )
+    for security_level in [
+        2048,
+        3072,
+        4096,
+    ]
+    for hash_suffix in [
+        "sha3_256",
+        "sha3_384",
+        "sha3_512",
+    ]
+    for padding_mode in [
+        "pkcs1_1.5",
+        "pss",
+    ]
 ]
 
 RSA_TESTVECTOR_ARGS = " ".join([
@@ -246,6 +301,14 @@ cryptotest(
     test_args = RSA_TESTVECTOR_ARGS,
     test_harness = "//sw/host/tests/crypto/rsa_kat:harness",
     test_vectors = RSA_TESTVECTOR_TARGETS,
+)
+
+cryptotest(
+    name = "rsa_keygen_kat",
+    slow_test = True,
+    test_args = "--run-keygen",
+    test_harness = "//sw/host/tests/crypto/rsa_kat:harness",
+    test_vectors = [],
 )
 
 SHA256_TESTVECTOR_TARGETS = [

@@ -284,7 +284,11 @@ cc_test(
 # environment.
 cc_library(
     name = "perso_tlv_headers",
-    hdrs = ["perso_tlv_data.h"],
+    hdrs = [
+        "perso_tlv_data.h",
+        "perso_tlv_data_v0.h",
+        "perso_tlv_data_v1.h",
+    ],
     deps = [
         "//sw/device/lib/testing/json:provisioning_data",
         "//sw/device/silicon_creator/lib:error",
@@ -298,8 +302,8 @@ manifest(d = {
     "manuf_state_creator": hex(CONST.MANUF_STATE.PERSO_INITIAL),
     "visibility": ["//visibility:private"],
     "version_major": "0",
-    # Release: 2025-09-16-RC00
-    "version_minor": "2025091600",
+    # Release: 2025-10-29-RC00
+    "version_minor": "2025102900",
     "security_version": "0xFFFFFFFF",
 })
 

@@ -17,8 +17,8 @@ class aes_base_vseq extends cip_base_vseq #(
   aes_seq_item       aes_item_queue[$];
   aes_message_item   aes_message;
   aes_message_item   message_queue[$];
-  key_sideload_set_seq sideload_seq, req_key_seq;
 
+  key_sideload_set_seq req_key_seq;
 
   // various knobs to enable certain routines
   bit                do_aes_init   = 1'b1;
@@ -66,6 +66,7 @@ class aes_base_vseq extends cip_base_vseq #(
     aes_ctrl[7:2]  = aes_pkg::AES_ECB;   // 6'b00_0001
     aes_ctrl[10:8] = aes_pkg::AES_128;   // 3'b001
     csr_wr(.ptr(ral.ctrl_shadowed), .value(aes_ctrl), .en_shadow_wr(1'b1), .blocking(1));
+    csr_spinwait(.ptr(ral.status.idle), .exp_data(1'b1));
     csr_rd(.ptr(ral.ctrl_shadowed), .value(aes_ctrl), .blocking(1));
     // Write auxiliary control register and make sure the update went through, i.e., the register
     // isn't locked already.
@@ -637,18 +638,21 @@ class aes_base_vseq extends cip_base_vseq #(
   endtask // write_data_key_iv
 
 
-
-  // enable sideload sequence
-  // and get it to generate a key a random times
+  // Repeatedly run a sideload sequences. These generate new keys at random times, presenting them
+  // through the key sideload interface.
+  //
+  // Return if reset is asserted
   task start_sideload_seq();
-    sideload_seq = key_sideload_set_seq#(keymgr_pkg::hw_key_req_t)::type_id::create("sideload_seq");
-    `DV_CHECK_RANDOMIZE_FATAL(sideload_seq)
-    sideload_seq.start(p_sequencer.key_sideload_sequencer_h);
-    forever begin
-      `DV_CHECK_RANDOMIZE_FATAL(sideload_seq)
-      // send to sequencer with low priority so we can overwrite
-      `uvm_send_pri(sideload_seq, 100)
+    typedef key_sideload_set_seq#(keymgr_pkg::hw_key_req_t) sideload_seq_t;
 
+    while (!cfg.under_reset) begin
+      sideload_seq_t sideload_seq = sideload_seq_t::type_id::create("sideload_seq");
+
+      if (!sideload_seq.randomize()) begin
+        `uvm_fatal(get_name(), "Failed to randomize sideload_seq.")
+      end
+
+      sideload_seq.start(p_sequencer.key_sideload_sequencer_h);
     end
   endtask
 

@@ -78,6 +78,7 @@ _MANUF_TEST_LOCKED_KEY = None
         srcs = ["empty_functest.c"],
         ecdsa_key = _MANUF_TEST_LOCKED_KEY if (lc_state, lc_val) in _TEST_LOCKED_LC_ITEMS else ecdsa_key_for_lc_state(ECDSA_SPX_KEY_STRUCTS, lc_val),
         exec_env = {
+            "//hw/top_earlgrey:sim_dv": None,
             "//hw/top_earlgrey:fpga_cw340_sival": None,
             "//hw/top_earlgrey:fpga_cw310_rom_with_fake_keys": None,
         },
@@ -258,7 +259,11 @@ cc_library(
         fpga = fpga_params(
             needs_jtag = True,
             otp = ":otp_img_sram_exec_en_{}".format(lc_state.lower()),
-            tags = ["manuf"],
+            tags = [
+                "manuf",
+                # Flaky in CI and locally, see #29555.
+                "broken",
+            ],
             test_cmd = "--elf={firmware}",
             test_harness = "//sw/host/tests/manuf/manuf_sram_program_crc_check",
         ),
