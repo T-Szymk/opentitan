@@ -1,18 +1,18 @@
 {
   "name": "opentitan_darjeeling_1_0_0",
 
-  "image": "tomszymkowiak/darjeeling_1_0_0:1.2",
+  "image": "opentitan",
   "mounts":[
     {"source": "${localWorkspaceFolder}",                           "target": "/app/opentitan",    "type": "bind"},
     {"source": "/tmp/.X11-unix",                                    "target": "/tmp/.X11-unix",    "type": "bind"},
     {"source": "${localEnv:XAUTHORITY}",                            "target": "/root/.Xauthority", "type": "bind"},
     // make sure source matches directory containing /bin for questa version on host
     {"source": "/opt/tools/mentor/questaone_2025.3_1/",             "target": "/opt/questa",       "type": "bind"},
-    {"source": "/opt/tools/synopsis",                               "target": "/opt/synopsis",     "type": "bind"},
+    {"source": "/opt/tools/synopsis/installs/vcs/X-2025.06-SP2-2/", "target": "/opt/synopsis",     "type": "bind"},
     {"source": "${localEnv:SSH_AUTH_SOCK}",                         "target": "/ssh-agent",        "type": "bind"}
   ],
   "workspaceFolder": "/app/opentitan",
-  "remoteUser": "root",
+  "remoteUser": "dev",
  
   // Env variables to be set in container
   "containerEnv": {
@@ -22,7 +22,7 @@
     "SALT_LICENSE_SERVER": "${localEnv:SALT_LICENSE_SERVER}",
     "SNPSLMD_LICENSE_FILE": "${localEnv:SNPSLMD_LICENSE_FILE}",
     "DISPLAY": "${localEnv:DISPLAY}",
-    "XAUTHORITY": "/root/.Xauthority"
+    "XAUTHORITY": "/${HOME}/.Xauthority"
   },
 
   "remoteEnv": {
