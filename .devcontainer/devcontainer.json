@@ -1,14 +1,14 @@
 {
-  "name": "opentitan_darjeeling_1_0_0",
+  "name": "opentitan_securesoc_devcontainer",
 
-  "image": "opentitan",
+  "image": "tomszymkowiak/darjeeling_1_0_0:1.2",
   "mounts":[
     {"source": "${localWorkspaceFolder}",                           "target": "/app/opentitan",    "type": "bind"},
     {"source": "/tmp/.X11-unix",                                    "target": "/tmp/.X11-unix",    "type": "bind"},
     {"source": "${localEnv:XAUTHORITY}",                            "target": "/root/.Xauthority", "type": "bind"},
     // make sure source matches directory containing /bin for questa version on host
-    {"source": "/opt/tools/mentor/questaone_2025.3_1/",             "target": "/opt/questa",       "type": "bind"},
-    {"source": "/opt/tools/synopsis/installs/vcs/X-2025.06-SP2-2/", "target": "/opt/synopsis",     "type": "bind"},
+    {"source": "/opt/tools/questa/",                                "target": "/opt/questa",       "type": "bind"},
+    {"source": "/opt/tools/synopsis/vcs/X-2025.06-SP2-2/",          "target": "/opt/synopsis",     "type": "bind"},
     {"source": "${localEnv:SSH_AUTH_SOCK}",                         "target": "/ssh-agent",        "type": "bind"}
   ],
   "workspaceFolder": "/app/opentitan",
@@ -17,7 +17,7 @@
   // Env variables to be set in container
   "containerEnv": {
     "QUESTA_HOME": "/opt/questa",
-    "VCS_HOME": "/opt/synopsis/installs/vcs/X-2025.06-SP2-2",
+    "VCS_HOME": "/opt/synopsis",
     "LM_LICENSE_FILE": "${localEnv:LM_LICENSE_FILE}",
     "SALT_LICENSE_SERVER": "${localEnv:SALT_LICENSE_SERVER}",
     "SNPSLMD_LICENSE_FILE": "${localEnv:SNPSLMD_LICENSE_FILE}",
@@ -30,8 +30,8 @@
   },
 
   "postCreateCommand": {
-    "vcs": "echo 'vcs() { bash \"${containerEnv:VCS_HOME}/bin/vcs\" \"$@\";' } >> /etc/bash.bashrc",
-    "dve": "echo 'dve() { bash \"${containerEnv:VCS_HOME}/bin/dve\" \"$@\";' } >> /etc/bash.bashrc"
+    "vcs": "echo 'vcs() { bash \"${containerEnv:VCS_HOME}/bin/vcs\" \"-full64\" \"$@\";' } >> $HOME/.bashrc",
+    "dve": "echo 'dve() { bash \"${containerEnv:VCS_HOME}/bin/dve\" \"-full64\" \"$@\";' } >> $HOME/.bashrc"
   },
 
   "runArgs": ["--network=host", "--security-opt", "seccomp=unconfined"],
