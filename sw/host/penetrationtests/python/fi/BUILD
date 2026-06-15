@@ -294,6 +294,7 @@ py_binary(
         "//sw/host/penetrationtests/python/util:dis_parser",
         "//sw/host/penetrationtests/python/util:gdb_controller",
         "//sw/host/penetrationtests/python/util:targets",
+        "//sw/host/penetrationtests/python/util:utils",
         "@rules_python//python/runfiles",
         requirement("pycryptodome"),
     ],
@@ -334,6 +335,7 @@ py_binary(
         "//sw/host/penetrationtests/python/util:dis_parser",
         "//sw/host/penetrationtests/python/util:gdb_controller",
         "//sw/host/penetrationtests/python/util:targets",
+        "//sw/host/penetrationtests/python/util:utils",
         "@rules_python//python/runfiles",
         requirement("pycryptodome"),
     ],
@@ -355,6 +357,34 @@ py_binary(
         "//sw/host/penetrationtests/python/util:common_library",
         "//sw/host/penetrationtests/python/util:dis_parser",
         "//sw/host/penetrationtests/python/util:gdb_controller",
+        "//sw/host/penetrationtests/python/util:targets",
+        "@rules_python//python/runfiles",
+    ],
+)
+
+py_binary(
+    name = "cc_rng_output_test",
+    testonly = True,
+    srcs = ["test_scripts/cc_rng_output_test.py"],
+    data = [
+        "//sw/host/opentitantool",
+    ],
+    deps = [
+        "//sw/host/penetrationtests/python/fi:fi_sym_cryptolib_commands",
+        "//sw/host/penetrationtests/python/util:targets",
+        "@rules_python//python/runfiles",
+    ],
+)
+
+py_binary(
+    name = "fips_rng_output_test",
+    testonly = True,
+    srcs = ["test_scripts/fips_rng_output_test.py"],
+    data = [
+        "//sw/host/opentitantool",
+    ],
+    deps = [
+        "//sw/host/penetrationtests/python/fi:fi_rng_commands",
         "//sw/host/penetrationtests/python/util:targets",
         "@rules_python//python/runfiles",
     ],

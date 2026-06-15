@@ -68,6 +68,8 @@ jobs:
         run: ./bazelisk.sh test //quality:rustfmt_check
       - name: Shellcheck
         run: ./bazelisk.sh test //quality:shellcheck_check
+      - name: ASM instrumentation
+        run: ./util/coverage/asm/run_instrument.sh --check
       - name: Header guards
         run: ./ci/scripts/include-guard.sh "$GITHUB_BASE_REF"
         if: ${{ github.event_name == 'pull_request' }}
@@ -207,11 +209,13 @@ jobs:
         run: |
           df -h
       - name: Prepare airgapped environment
+        continue-on-error: true # TODO: the step was running out of memory; fix that issue and remove this line.
         run: ./util/prep-bazel-airgapped-build.sh
       - name: Check disk space
         run: |
           df -h
       - name: Build in the airgapped environment
+        continue-on-error: true # See TODO above.
         run: ./ci/scripts/test-airgapped-build.sh
 
   verible_lint:
@@ -412,8 +416,8 @@ jobs:
   schedule_fpga_jobs:
     name: Schedule FPGA jobs
     runs-on: ubuntu-22.04
+    if: ${{ github.event_name != 'merge_group' }}
     outputs:
-      jobs_cw310: ${{ steps.schedule.outputs.jobs_cw310 }}
       jobs_cw340: ${{ steps.schedule.outputs.jobs_cw340 }}
     steps:
       - uses: actions/checkout@v6
@@ -433,9 +437,6 @@ jobs:
             --test_tag_filters=-manual,-broken,-skip_in_ci,-slow_test,fpga \
             "tests(//sw/... union @manufacturer_test_hooks//...)")
           echo "$JOBS"
-          echo 'jobs_cw310<<EOF' >> "$GITHUB_OUTPUT"
-          echo "$JOBS" | jq '[.[] | select(.board == "cw310")]' >> "$GITHUB_OUTPUT"
-          echo EOF >> "$GITHUB_OUTPUT"
           echo 'jobs_cw340<<EOF' >> "$GITHUB_OUTPUT"
           echo "$JOBS" | jq '[.[] | select(.board == "cw340")]' >> "$GITHUB_OUTPUT"
           echo EOF >> "$GITHUB_OUTPUT"
@@ -444,27 +445,6 @@ jobs:
         with:
             name: fpga_jobs
             path: ${{ steps.schedule.outputs.jobs_dir }}
-
-  execute_fpga_cw310_jobs:
-    name: ${{ matrix.name }}
-    needs:
-      - schedule_fpga_jobs
-      - quick_lint
-      - chip_earlgrey_cw310_hyperdebug
-    strategy:
-      fail-fast: false
-      matrix:
-        include: ${{ fromJSON(needs.schedule_fpga_jobs.outputs.jobs_cw310) }}
-    uses: ./.github/workflows/fpga.yml
-    if: ${{ github.event_name != 'merge_group' }}
-    secrets: inherit
-    with:
-      job_name: ${{ matrix.id }}
-      bitstream: chip_earlgrey_cw310_hyperdebug
-      board: ${{ matrix.board }}
-      interface: hyper310
-      artifact: fpga_jobs
-      target_file: ${{ matrix.target_file }}
 
   execute_fpga_cw340_jobs:
     name: ${{ matrix.name }}

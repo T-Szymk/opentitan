@@ -46,7 +46,6 @@
         "ms-python.python",
         "ms-python.vscode-pylance",
         "rashwell.tcl",
-        "anthropic.claude-code",
         "eamodio.gitlens",
         "charliermarsh.ruff",
         "rust-lang.rust-analyzer",

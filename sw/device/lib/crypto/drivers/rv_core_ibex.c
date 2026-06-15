@@ -56,6 +56,11 @@ hardened_bool_t ibex_check_security_config(void) {
   return kHardenedBoolTrue;
 }
 
+status_t ibex_set_security_config(void) {
+  CSR_SET_BITS(CSR_REG_CPUCTRL, kExpectedConfig << kIdx);
+  return LAUNDERED_OTCRYPTO_OK;
+}
+
 /**
  * Blocks until data is ready in the RND register.
  */
@@ -87,7 +92,7 @@ status_t ibex_disable_icache(hardened_bool_t *icache_enabled) {
     HARDENED_CHECK_EQ(launder32(*icache_enabled), kHardenedBoolFalse);
   }
 
-  return OTCRYPTO_OK;
+  return LAUNDERED_OTCRYPTO_OK;
 }
 
 void ibex_restore_icache(hardened_bool_t icache_enabled) {

@@ -157,9 +157,9 @@ static void dice_chain_next_cert_obj(void) {
 OT_WARN_UNUSED_RESULT
 static rom_error_t dice_chain_load_cert_obj(const char *name,
                                             size_t name_size) {
-  rom_error_t err =
-      perso_tlv_get_cert_obj(dice_chain_get_tail_buffer(),
-                             dice_chain_get_tail_size(), &dice_chain.cert_obj);
+  rom_error_t err = perso_tlv_get_cert_obj(
+      dice_chain_get_tail_buffer(), dice_chain_get_tail_size(),
+      kPersoBlobVersionV0, &dice_chain.cert_obj);
 
   if (err != kErrorOk) {
     // Cleanup the stale value if error.
@@ -258,14 +258,14 @@ static rom_error_t dice_chain_push_cert(const char *name, const uint8_t *cert,
   perso_tlv_object_type_t cert_type =
       kDiceCertFormat == kDiceCertFormatX509TcbInfo ? kPersoObjectTypeX509Cert
                                                     : kPersoObjectTypeCwtCert;
-  RETURN_IF_ERROR(perso_tlv_cert_obj_build(name, cert_type, cert, cert_size,
-                                           dice_chain_get_tail_buffer(),
-                                           &cert_page_left));
+  RETURN_IF_ERROR(perso_tlv_cert_obj_build(
+      name, cert_type, cert, cert_size, kPersoBlobVersionV0,
+      dice_chain_get_tail_buffer(), &cert_page_left));
 
   // Move the offset to the new tail.
-  RETURN_IF_ERROR(perso_tlv_get_cert_obj(dice_chain_get_tail_buffer(),
-                                         dice_chain_get_tail_size(),
-                                         &dice_chain.cert_obj));
+  RETURN_IF_ERROR(perso_tlv_get_cert_obj(
+      dice_chain_get_tail_buffer(), dice_chain_get_tail_size(),
+      kPersoBlobVersionV0, &dice_chain.cert_obj));
   dice_chain_next_cert_obj();
   return kErrorOk;
 }
@@ -274,7 +274,8 @@ rom_error_t dice_chain_attestation_silicon(void) {
   // Initialize the entropy complex and KMAC for key manager operations.
   // Note: `OTCRYPTO_OK.value` is equal to `kErrorOk` but we cannot add a static
   // assertion here since its definition is not an integer constant expression.
-  HARDENED_RETURN_IF_ERROR((rom_error_t)entropy_complex_init().value);
+  HARDENED_RETURN_IF_ERROR(
+      (rom_error_t)entropy_complex_init(kHardenedBoolFalse).value);
   HARDENED_RETURN_IF_ERROR(kmac_keymgr_configure());
 
   // Set keymgr reseed interval. Start with the maximum value to avoid
@@ -334,8 +335,8 @@ rom_error_t dice_chain_attestation_creator(
     HARDENED_RETURN_IF_ERROR(dice_cdi_0_cert_build(
         (hmac_digest_t *)rom_ext_measurement->data,
         rom_ext_manifest->security_version, &dice_chain_cdi_0_key_ids,
-        &static_dice_cdi_0.cdi_0_pubkey, static_dice_cdi_0.cert_data,
-        &static_dice_cdi_0.cert_size));
+        &static_dice_cdi_0.uds_pubkey, &static_dice_cdi_0.cdi_0_pubkey,
+        static_dice_cdi_0.cert_data, &static_dice_cdi_0.cert_size));
   } else {
     // Replace UDS with CDI_0 key for endorsing next stage cert.
     HARDENED_RETURN_IF_ERROR(otbn_boot_attestation_key_save(
@@ -478,8 +479,8 @@ rom_error_t dice_chain_attestation_owner(
     HARDENED_RETURN_IF_ERROR(dice_cdi_1_cert_build(
         (hmac_digest_t *)bl0_measurement, owner_measurement, owner_history_hash,
         owner_manifest->security_version, key_domain, &dice_chain.key_ids,
-        &dice_chain.subject_pubkey, dice_chain.scratch_cert,
-        &updated_cert_size));
+        &static_dice_cdi_0.cdi_0_pubkey, &dice_chain.subject_pubkey,
+        dice_chain.scratch_cert, &updated_cert_size));
     RETURN_IF_ERROR(dice_chain_push_cert("CDI_1", dice_chain.scratch_cert,
                                          updated_cert_size));
   } else {

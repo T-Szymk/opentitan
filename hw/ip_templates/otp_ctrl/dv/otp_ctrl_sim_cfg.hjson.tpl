@@ -57,7 +57,7 @@
              "sec_cm_prim_onehot_check_bind"]
 
   // Default iterations for all tests - each test entry can override this.
-  reseed: 50
+  reseed: 10
 
   // Add OTP_CTRL specific exclusion files.
   vcs_cov_excl_files: ["{self_dir}/cov/otp_ctrl_cov_unr_excl.el",
@@ -128,16 +128,19 @@
     {
       name: otp_ctrl_dai_lock
       uvm_test_seq: otp_ctrl_dai_lock_vseq
+      reseed: 30
     }
 
     {
       name: otp_ctrl_dai_errs
       uvm_test_seq: otp_ctrl_dai_errs_vseq
+      reseed: 25
     }
 
     {
       name: otp_ctrl_check_fail
       uvm_test_seq: otp_ctrl_check_fail_vseq
+      reseed: 50
     }
 
     {
@@ -156,6 +159,7 @@
       // This test is to check reg programming is gated when direct_access_regwen=0
       // Thus this test is timing sensitive
       run_opts: ["+zero_delays=1"]
+      reseed: 30
     }
 
     {

@@ -42,7 +42,7 @@ otp_image(
     overlays = STD_OTP_OVERLAYS + [":otp_json_readback_enable"],
 )
 
-_TESTS = {
+_READBACK_TESTS = {
     "default": {
         "otp": None,
     },
@@ -55,6 +55,65 @@ _TESTS = {
     opentitan_test(
         name = "sram_readback_{}_test".format(name),
         srcs = ["sram_readback_test.c"],
+        exec_env = {
+            "//hw/top_earlgrey:fpga_cw310_rom_with_fake_keys": None,
+            "//hw/top_earlgrey:fpga_cw340_rom_with_fake_keys": None,
+        },
+        fpga = fpga_params(
+            otp = param["otp"],
+        ),
+        deps = [
+            "//hw/top:otp_ctrl_c_regs",
+            "//hw/top:sram_ctrl_c_regs",
+            "//hw/top_earlgrey/sw/autogen:top_earlgrey",
+            "//sw/device/lib/base:abs_mmio",
+            "//sw/device/lib/testing/test_framework:ottf_main",
+            "//sw/device/silicon_creator/lib/drivers:otp",
+        ],
+    )
+    for name, param in _READBACK_TESTS.items()
+]
+
+test_suite(
+    name = "sram_readback_test",
+    tags = ["manual"],
+    tests = [
+        "sram_readback_{}_test".format(name)
+        for name in _READBACK_TESTS.keys()
+    ],
+)
+
+otp_json(
+    name = "otp_json_renew_disabled",
+    partitions = [
+        otp_partition(
+            name = "CREATOR_SW_CFG",
+            items = {
+                "CREATOR_SW_CFG_SRAM_KEY_RENEW_AND_INIT_EN": otp_hex(CONST.HARDENED_FALSE),
+            },
+        ),
+    ],
+)
+
+otp_image(
+    name = "otp_img_renew_disabled",
+    src = "//hw/top_earlgrey/data/otp:otp_json_rma",
+    overlays = STD_OTP_OVERLAYS + [":otp_json_renew_disabled"],
+)
+
+_RENEW_TESTS = {
+    "default": {
+        "otp": None,
+    },
+    "disabled": {
+        "otp": ":otp_img_renew_disabled",
+    },
+}
+
+[
+    opentitan_test(
+        name = "sram_key_renew_{}_test".format(name),
+        srcs = ["sram_renew_test.c"],
         exec_env = {
             "//hw/top_earlgrey:fpga_cw310_rom_with_fake_keys": None,
         },
@@ -70,14 +129,14 @@ _TESTS = {
             "//sw/device/silicon_creator/lib/drivers:otp",
         ],
     )
-    for name, param in _TESTS.items()
+    for name, param in _RENEW_TESTS.items()
 ]
 
 test_suite(
-    name = "sram_readback_test",
+    name = "sram_key_renew_test",
     tags = ["manual"],
     tests = [
-        "sram_readback_{}_test".format(name)
-        for name in _TESTS.keys()
+        "sram_key_renew_{}_test".format(name)
+        for name in _RENEW_TESTS.keys()
     ],
 )

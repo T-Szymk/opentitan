@@ -1162,6 +1162,7 @@ opentitan_test(
         EARLGREY_TEST_ENVS,
         EARLGREY_SILICON_OWNER_ROM_EXT_ENVS,
         {
+            "//hw/top_earlgrey:fpga_cw340_test_rom": None,
             "//hw/top_earlgrey:silicon_creator": None,
         },
         DARJEELING_TEST_ENVS,
@@ -1171,6 +1172,8 @@ opentitan_test(
         "//sw/device/lib/arch:device",
         "//sw/device/lib/base:macros",
         "//sw/device/lib/base:stdasm",
+        "//sw/device/lib/coverage:api",
+        "//sw/device/lib/coverage:ottf_runtime",
         "//sw/device/lib/dif:uart",
         "//sw/device/lib/runtime:ibex",
         "//sw/device/lib/runtime:log",
@@ -1963,6 +1966,7 @@ test_suite(
         ),
         exec_env = {
             "//hw/top_earlgrey:fpga_cw310_sival": None,
+            "//hw/top_earlgrey:fpga_cw340_sival": None,
         },
         fpga = fpga_params(
             otp = "//hw/top_earlgrey/data/otp/emulation:otp_img_{}_manuf_personalized".format(lc_state),
@@ -2183,6 +2187,8 @@ opentitan_test(
         {
             "//hw/top_earlgrey:fpga_cw310_sival": None,
             "//hw/top_earlgrey:fpga_cw310_sival_rom_ext": None,
+            "//hw/top_earlgrey:fpga_cw340_sival": None,
+            "//hw/top_earlgrey:fpga_cw340_sival_rom_ext": None,
         },
     ),
     fpga = fpga_params(
@@ -2215,6 +2221,8 @@ opentitan_test(
         {
             "//hw/top_earlgrey:fpga_cw310_sival": None,
             "//hw/top_earlgrey:fpga_cw310_sival_rom_ext": None,
+            "//hw/top_earlgrey:fpga_cw340_sival": None,
+            "//hw/top_earlgrey:fpga_cw340_sival_rom_ext": None,
         },
     ),
     fpga = fpga_params(
@@ -2425,7 +2433,7 @@ opentitan_test(
         "//sw/device/lib/testing/test_framework:ottf_alerts",
         "//sw/device/lib/testing/test_framework:ottf_main",
         "//sw/device/silicon_creator/lib/drivers:retention_sram",
-        "//sw/otbn/crypto:x25519_sideload",
+        "//sw/otbn/crypto:run_curve25519",
     ],
 )
 
@@ -2462,7 +2470,7 @@ opentitan_test(
         "//sw/device/lib/testing:sram_ctrl_testutils",
         "//sw/device/lib/testing/test_framework:ottf_main",
         "//sw/device/silicon_creator/lib/drivers:retention_sram",
-        "//sw/otbn/crypto:x25519_sideload",
+        "//sw/otbn/crypto:run_curve25519",
     ],
 )
 
@@ -2683,7 +2691,7 @@ opentitan_test(
         "//sw/device/lib/testing:otbn_testutils",
         "//sw/device/lib/testing/test_framework:ottf_alerts",
         "//sw/device/lib/testing/test_framework:ottf_main",
-        "//sw/otbn/crypto:x25519_sideload",
+        "//sw/otbn/crypto:run_curve25519",
     ],
 )
 
@@ -2720,7 +2728,7 @@ opentitan_test(
         "//sw/device/lib/testing:keymgr_testutils",
         "//sw/device/lib/testing:otbn_testutils",
         "//sw/device/lib/testing/test_framework:ottf_main",
-        "//sw/otbn/crypto:x25519_sideload",
+        "//sw/otbn/crypto:run_curve25519",
     ],
 )
 
@@ -2746,6 +2754,16 @@ _KMAC_APP_ROM_LIST = [
     (
         "//sw/device/silicon_creator/rom:mask_rom_fpga_cw310_hashfile",
         "fpga_cw310_sival",
+        ["//hw/top_earlgrey"],
+    ),
+    (
+        "//sw/device/lib/testing/test_rom:test_rom_fpga_cw340_hashfile",
+        "fpga_cw340_test_rom",
+        ["//hw/top_earlgrey"],
+    ),
+    (
+        "//sw/device/silicon_creator/rom:mask_rom_fpga_cw340_hashfile",
+        "fpga_cw340_rom_with_fake_keys",
         ["//hw/top_earlgrey"],
     ),
     (
@@ -5327,6 +5345,7 @@ opentitan_test(
     srcs = ["usbdev_logging_test.c"],
     exec_env = {
         "//hw/top_earlgrey:fpga_cw310_test_rom": None,
+        "//hw/top_earlgrey:fpga_cw340_test_rom": None,
         "//hw/top_earlgrey:sim_dv": None,
         "//hw/top_earlgrey:sim_verilator": None,
     },
@@ -6261,6 +6280,13 @@ _RV_DM_TAP_SEL_LC_STATES = get_lc_items(
             EARLGREY_SILICON_OWNER_ROM_EXT_ENVS if lc_state == "prod" else {},
             {
                 "//hw/top_earlgrey:fpga_cw310_sival": None,
+                # TODO: (#30294) Adapt for bkdr_loader: in DEV state the DFT TAP strapping
+                # triggers PRELOAD mode, presenting the bkdr_loader JTAG TAP instead
+                # of the chip DFT TAP. The test must be updated to account for the
+                # bkdr_loader's IDCODE and its done-register handshake before the
+                # downstream DFT TAP becomes visible.
+            } if lc_state == "dev" else {
+                "//hw/top_earlgrey:fpga_cw310_sival": None,
                 "//hw/top_earlgrey:fpga_cw340_sival": None,
             },
         ),
@@ -6692,6 +6718,9 @@ opentitan_test(
     exec_env = {
         "//hw/top_earlgrey:fpga_cw310_sival": None,
         "//hw/top_earlgrey:fpga_cw310_rom_with_fake_keys": None,
+        "//hw/top_earlgrey:fpga_cw340_sival": None,
+        "//hw/top_earlgrey:fpga_cw340_sival_rom_ext": None,
+        "//hw/top_earlgrey:fpga_cw340_rom_with_fake_keys": None,
     },
     fpga = fpga_params(
         needs_jtag = True,
@@ -6716,6 +6745,7 @@ opentitan_test(
     ],
     exec_env = {
         "//hw/top_earlgrey:fpga_cw310_sival": None,
+        "//hw/top_earlgrey:fpga_cw340_sival": None,
     },
     fpga = fpga_params(
         test_cmd = """
@@ -6747,6 +6777,7 @@ opentitan_test(
         EARLGREY_SILICON_OWNER_ROM_EXT_ENVS,
         {
             "//hw/top_earlgrey:fpga_cw310_sival": None,
+            "//hw/top_earlgrey:fpga_cw340_sival": None,
         },
     ),
     fpga = fpga_params(
@@ -6790,6 +6821,7 @@ opentitan_test(
         EARLGREY_SILICON_OWNER_ROM_EXT_ENVS,
         {
             "//hw/top_earlgrey:fpga_cw310_sival": None,
+            "//hw/top_earlgrey:fpga_cw340_sival": None,
         },
     ),
     fpga = fpga_params(
@@ -6835,6 +6867,7 @@ opentitan_test(
     srcs = ["status_report_test.c"],
     exec_env = {
         "//hw/top_earlgrey:fpga_cw310_test_rom": None,
+        "//hw/top_earlgrey:fpga_cw340_test_rom": None,
     },
     fpga = fpga_params(
         exit_failure = "PASS!",
@@ -6860,6 +6893,7 @@ opentitan_test(
     srcs = ["status_report_overflow_test.c"],
     exec_env = {
         "//hw/top_earlgrey:fpga_cw310_test_rom": None,
+        "//hw/top_earlgrey:fpga_cw340_test_rom": None,
     },
     fpga = fpga_params(
         exit_failure = "PASS!",
