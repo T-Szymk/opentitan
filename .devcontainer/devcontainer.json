@@ -26,12 +26,7 @@
   },
 
   "remoteEnv": {
-    "PATH": "/opt/questa/questasim/linux_x86_64:${containerEnv:PATH}"
-  },
-
-  "postCreateCommand": {
-    "vcs": "echo 'vcs() { bash \"${containerEnv:VCS_HOME}/bin/vcs\" \"-full64\" \"$@\";' } >> $HOME/.bashrc",
-    "dve": "echo 'dve() { bash \"${containerEnv:VCS_HOME}/bin/dve\" \"-full64\" \"$@\";' } >> $HOME/.bashrc"
+    "PATH": "/opt/questa/questasim/linux_x86_64:/home/dev/bin:${containerEnv:PATH}"
   },
 
   "runArgs": ["--network=host", "--security-opt", "seccomp=unconfined"],
