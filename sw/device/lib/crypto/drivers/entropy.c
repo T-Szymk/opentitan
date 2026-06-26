@@ -174,6 +174,10 @@ typedef struct entropy_src_config {
    */
   multi_bit_bool_t single_bit_mode;
   /**
+   * Scope of the health checks.
+   */
+  multi_bit_bool_t threshold_scope;
+  /**
    * The size of the window used for health tests.
    */
   uint16_t fips_test_window_size;
@@ -261,6 +265,7 @@ static const entropy_complex_config_t
                         .route_to_firmware = kMultiBitBool4False,
                         .bypass_conditioner = kMultiBitBool4False,
                         .single_bit_mode = kMultiBitBool4False,
+                        .threshold_scope = kMultiBitBool4False,
                         .fips_test_window_size = 0x200,
                         .alert_threshold = 2,
                         // TODO(#19392): Figure out appropriate thresholds.
@@ -340,7 +345,8 @@ static const entropy_complex_config_t
                     .route_to_firmware = kMultiBitBool4False,
                     .bypass_conditioner = kMultiBitBool4False,
                     .single_bit_mode = kMultiBitBool4False,
-                    .fips_test_window_size = 2048,
+                    .threshold_scope = kMultiBitBool4True,
+                    .fips_test_window_size = 512,
                     .alert_threshold = 4,
                     .repcnt_threshold = 81,
                     .repcnts_threshold = 21,
@@ -478,6 +484,8 @@ static status_t csrng_send_app_cmd(uint32_t base_address,
     if (timeout == 0) {
       return OTCRYPTO_RECOV_ERR;
     }
+    reg = abs_mmio_read32(sts_reg_addr);
+    HARDENED_CHECK_EQ(bitfield_bit32_read(reg, rdy_bit_offset), true);
   }
 
 #define ENTROPY_CMD(m, i) ((bitfield_field32_t){.mask = m, .index = i})
@@ -532,6 +540,8 @@ static status_t csrng_send_app_cmd(uint32_t base_address,
       if (timeout == 0) {
         return OTCRYPTO_RECOV_ERR;
       }
+      reg = abs_mmio_read32(sts_reg_addr);
+      HARDENED_CHECK_EQ(bitfield_bit32_read(reg, reg_rdy_bit_offset), true);
     }
     abs_mmio_write32(cmd_reg_addr, cmd.seed_material->data[i]);
   }
@@ -666,6 +676,8 @@ static status_t edn_ready_block(uint32_t edn_address) {
   if (timeout == 0) {
     return OTCRYPTO_RECOV_ERR;
   }
+  reg = abs_mmio_read32(edn_address + EDN_SW_CMD_STS_REG_OFFSET);
+  HARDENED_CHECK_EQ(bitfield_bit32_read(reg, EDN_SW_CMD_STS_CMD_RDY_BIT), true);
 
   if (bitfield_field32_read(reg, CSRNG_SW_CMD_STS_CMD_STS_FIELD)) {
     return OTCRYPTO_RECOV_ERR;
@@ -804,7 +816,7 @@ static status_t entropy_src_configure(const entropy_src_config_t *config) {
                                 ENTROPY_SRC_CONF_ENTROPY_DATA_REG_ENABLE_FIELD,
                                 config->route_to_firmware);
   conf = bitfield_field32_write(conf, ENTROPY_SRC_CONF_THRESHOLD_SCOPE_FIELD,
-                                kMultiBitBool4False);
+                                config->threshold_scope);
   conf = bitfield_field32_write(conf, ENTROPY_SRC_CONF_RNG_BIT_ENABLE_FIELD,
                                 config->single_bit_mode);
   conf = bitfield_field32_write(conf, ENTROPY_SRC_CONF_RNG_BIT_SEL_FIELD, 0);

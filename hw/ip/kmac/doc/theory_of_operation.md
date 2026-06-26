@@ -266,7 +266,7 @@ Note that the output length for a KMAC operation is the same as the `digest_sx` 
 | `prefix_mode`   | Static   | The `prefix_mode` determines whether to take the prefix from the CSR or use the hardcoded prefix. For static interfaces, if `prefix_mode` is 1, the `prefix` will be used for both cSHAKE and KMAC operations. If 0, the CSR value is used. For dynamic interfaces, `prefix_mode` has no effect. Independently of the value, if the `mode` is cSHAKE, the CSR prefix is used. If the mode is KMAC, the compile-time value is used. |
 | `mode`          | Session  | The hashing mode which is performed. |
 | `kstrength`     | Session  | The strength of the selected `mode`. Not to be confused with the output length of a hashing operation. |
-| `en_xof`        | Session  | If 1, the app interface will automatically trigger a RUN command once it has pushed the full rate on the response channel. If 0, no squeeze can be performed at all. Usually enabled for SHAKE and cSHAKE and disabled for SHA3 and KMAC. Has no effect on static interfaces. |
+| `en_xof`        | Session  | If 1, the app interface will automatically trigger a RUN command once it has pushed the full rate on the response channel. If 0, no squeeze can be performed at all. Only applicable to SHAKE and cSHAKE. Must be 0 for a dynamic interface if `mode` is SHA3 or KMAC. Must always be 0 if the interface is static. |
 
 The session configuration is sent as the first message request and the configuration values are read from `data_s0` as defined by the struct `app_ses_config_t`.
 
@@ -289,10 +289,10 @@ These configuration values are left to the SW as setting these requires system s
 The image below depicts the message data path and its related control signals.
 ![](../doc/kmac-data-path.svg)
 
-The compile-time parameter `EnMasking` and the static parameter `masked` control whether the message FIFO is used or bypassed.
-The FIFO is used unless `EnMasking` and `masked` are both set in which case the FIFO is bypassed.
+The static parameter `masked` controls whether the message FIFO is used or bypassed.
+The FIFO is used unless `masked` is set in which case the FIFO is bypassed.
 
-For both types of interface, messages other than the last are sent using the full width of the `data_s0` / `data_s1` width.
+If the FIFO is bypassed, messages other than the last must be sent using the full width of the `data_s0` / `data_s1` width.
 See the operation principle section for more details about the last message.
 
 Although the message requests make full use of the `data_s0` / `data_s1` signal width (`MsgWidth`), the returned digest size depends on the interface's `if_type`.
@@ -307,7 +307,10 @@ For SHA3, the number of responses is `Strength / DynAppDigestW = Strength / 64`.
 Note, for SHA3-224 this does not divide properly.
 As such, the interface sends back 4 responses where the last one contains some bits which must be ignored.
 
-For SHAKE, cSHAKE and KMAC the standard defines the `StateWidth` to be 1600 bits (Same as SHA3) and these algorithms produce `StateWidth - 2 * Strength` bits of digest per squeeze.
+For KMAC the requested output length is fixed to `AppDigestW` bits.
+Therefore, the interface sends back `AppDigestW / DynAppDigestW = 384 / 64 = 6` responses.
+
+For SHAKE and cSHAKE the standard defines the `StateWidth` to be 1600 bits (Same as SHA3) and these algorithms produce `StateWidth - 2 * Strength` bits of digest per squeeze.
 A dynamic app interface then returns this digest data in `(StateWidth - 2 * Strength) / DynAppDigestW` responses.
 For example, when performing a SHAKE128 operation, the interface sends `(1600 - 2*128) / 64 = 21` response beats before it triggers a RUN command.
 
@@ -335,11 +338,11 @@ If the configuration is valid, the message requests are forwarded to the hashing
 This engine then starts absorbing, depending on the hashing mode, the key and the prefix data.
 Afterwards it starts absorbing messages from the app interface.
 
-An app must send the full message split up into message requests which make use of the full width.
+If `masked` is set (FIFO bypassed), an app must send the full message split up into message requests which make use of the full width.
 This means `strb` must be all ones.
 An exception is the last message part, which can be less than the full width of the interface.
 Sending this last message part is closely related to how the message phase is ended.
-There are two ways for an app to terminate the message phase.
+Independent of `masked`, there are two ways for an app to terminate the message phase.
 In both cases there must be at most one request which has `req_last` asserted.
 
 - Termination on the last data beat
@@ -366,13 +369,13 @@ For a static app, one full digest is sent (handshaked) and the app interface ret
 
 For a dynamic app, the interface starts to push the full rate of the hashing operation in `DynAppDigestW` sized responses.
 The app can exert back pressure on the response channel to control how fast it consumes the digest data.
-If `en_xof` is false, the operation is complete once the full digest has been sent.
+If `en_xof` is false or the `mode` is SHA3 or KMAC (no XOF support for SHA3 or KMAC), the operation is complete once the full digest / the requested output length has been sent.
 The interface will just wait for a termination request.
 If `en_xof` is true, the interface automatically sends a RUN command to the hashing engine after sending the first full digest.
 It then waits until the new digest is available and begins to push responses again.
 After each full digest is sent, the interface will send another RUN command to the hashing engine and repeat.
 
-When the app has received the desired amount of responses, it should send another "message" request with the `req_last` signal asserted.
+When the app has received the desired amount of responses, it should send another "message" request with the `req_last` signal asserted (the actual message is irrelevant).
 This termination request tells the interface to stop sending digest responses and it will issue a DONE command to the hashing engine.
 One final finish response (`rsp_finish=1`) is sent to the app to acknowledge the end of the session.
 Once the app has sent the termination request it must make sure to drain the (pipelined) response channel until the finish response is received.
@@ -405,7 +408,7 @@ StAppProcess --> StAppWait
 
 StAppWait --> StAppPushDigest: Digest available
 
-StAppPushDigest --> StAppWait:   DYN && digest pushed && en_xof
+StAppPushDigest --> StAppWait:   DYN && digest pushed && en_xof && mode != {SHA3, KMAC}
 StAppPushDigest --> StAppFinish: STATIC && first digest part pushed
 StAppPushDigest --> StAppFinish: DYN && termination request
 

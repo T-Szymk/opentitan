@@ -128,6 +128,7 @@ ed25519_gen_public_key:
   /* Clear w16 and w17 with randomness before loading the second share s1. */
   bn.wsrr w16, URND
   bn.wsrr w17, URND
+  bn.sub  w31, w31, w31 /* Clear flags */
 
   /* [w17:w16] <= s1. */
   li       x2, 16
@@ -241,8 +242,10 @@ ed25519_verify_var:
        [w17:w16] <= k */
   li       x2, 16
   la       x3, ed25519_hash_k
-  bn.lid   x2, 0(x3++)
+  bn.lid   x2, 0(x3)
   addi     x2, x2, 1
+  la       x3, ed25519_hash_k /* load it again for redundancy */
+  addi     x3, x3, 32
   bn.lid   x2, 0(x3)
 
   /* Reduce k modulo L.
@@ -339,6 +342,7 @@ ed25519_verify_var:
   jal      x1, affine_to_ext
 
   /* w28 <= w3 = (8 * k) mod L */
+  bn.wsrr  w28, URND /* pre-randomize */
   bn.mov   w28, w3
 
   /* [w13:w10] <= w28 * [w9:w6] = [8][k]A */
@@ -349,6 +353,14 @@ ed25519_verify_var:
   bn.mov   w6, w4
   bn.mov   w7, w5
   jal      x1, affine_to_ext
+
+  /* Check if [8][k]A is the identity point.
+     If [8][k]A = O, its X-coordinate (w10) is 0 mod p. */
+  bn.cmp   w10, w31
+  csrrs    x2, FG0, x0
+  andi     x2, x2, 8
+  li       x3, 8
+  beq      x2, x3, verify_fail
 
   /* Store the intermediate result [8][k]A for later.
        [w5:w2] <= [w13:w10] = [8][k]A */
@@ -725,6 +737,7 @@ ed25519_sign_stage2:
   /* Clear w16 and w17 with randomness before loading the second share s1. */
   bn.wsrr w16, URND
   bn.wsrr w17, URND
+  bn.sub  w31, w31, w31 /* Clear flags */
 
   /* [w17:w16] <= s1. */
   li       x2, 16
@@ -1321,6 +1334,7 @@ ext_scmul_sca:
   bn.mov w3, w17
 
   /* [w5:w4] <= w4 + k * L = s1 + k' * L. */
+  bn.mov w20, w31 /* Clear the secret */
   bn.mov w20, w4
   jal x1, sc_blind
   bn.mov w4, w16
@@ -1339,7 +1353,7 @@ ext_scmul_sca:
 
 
   /* Iterate over all scalar bits starting at the MSB. */
-  loopi  385, 56
+  loopi  385, 56    /* SCA_TEST_REPLACE: loopi 3, 56 */
     /* Compute Q = 2 * Q.
          [w13:w10] <= [w13:w10] + [w13:w10] = 2 * Q  */
     jal x1, ext_double

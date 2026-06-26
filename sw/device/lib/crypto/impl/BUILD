@@ -8,7 +8,6 @@ load("//rules/opentitan:defs.bzl", "OPENTITAN_CPU")
 load(
     "//rules/opentitan:defs.bzl",
     "EARLGREY_TEST_ENVS",
-    "cw310_params",
     "fpga_params",
     "opentitan_test",
     "verilator_params",
@@ -289,6 +288,7 @@ cc_library(
     deps = [
         ":config",
         ":status",
+        "//sw/device/lib/crypto/drivers:aes",
         "//sw/device/lib/crypto/drivers:rv_core_ibex",
         "//sw/device/lib/crypto/impl:drbg",
         "//sw/device/lib/crypto/impl:integrity",
@@ -303,6 +303,10 @@ cc_test(
     srcs = ["key_transport_unittest.cc"],
     deps = [
         ":key_transport",
+        "//hw/top:aes_c_regs",
+        "//hw/top:keymgr_c_regs",
+        "//hw/top_earlgrey/sw/autogen:top_earlgrey",
+        "//sw/device/lib/base:abs_mmio",
         "@googletest//:gtest_main",
     ],
 )
