@@ -7,8 +7,8 @@
     {"source": "/tmp/.X11-unix",                                    "target": "/tmp/.X11-unix",    "type": "bind"},
     {"source": "${localEnv:XAUTHORITY}",                            "target": "/root/.Xauthority", "type": "bind"},
     // make sure source matches directory containing /bin for questa version on host
-    {"source": "/opt/tools/questa/",                                "target": "/opt/questa",       "type": "bind"},
-    {"source": "/opt/tools/synopsis/vcs/X-2025.06-SP2-2/",          "target": "/opt/synopsis",     "type": "bind"},
+    {"source": "/opt/tuni/mentor/questaone_2025.3_1/",              "target": "/opt/questa",       "type": "bind"},
+    {"source": "/opt/tuni/synopsis/vcs/X-2025.06-SP2-2/",           "target": "/opt/synopsis",     "type": "bind"},
     {"source": "${localEnv:SSH_AUTH_SOCK}",                         "target": "/ssh-agent",        "type": "bind"}
   ],
   "workspaceFolder": "/app/opentitan",
@@ -35,16 +35,17 @@
     "vscode": {
       
       "extensions": [
-        "laktak.hjson",
+        "charliermarsh.ruff",
+        "didericis.starlark",
+        "eamodio.gitlens",
+        "hbohlin.vhdl-ls",
         "hudson-river-trading.vscode-slang",
+        "laktak.hjson",        
         "ms-vscode.cpptools-extension-pack",
         "ms-python.python",
         "ms-python.vscode-pylance",
-        "rashwell.tcl",
-        "eamodio.gitlens",
-        "charliermarsh.ruff",
-        "rust-lang.rust-analyzer",
-        "hbohlin.vhdl-ls"
+        "rashwell.tcl",                
+        "rust-lang.rust-analyzer"        
       ],
 
       "settings": {
