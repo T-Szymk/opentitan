@@ -511,30 +511,31 @@ jobs:
             "-//sw/otbn/crypto/..." \
             "-//third_party/..."    \
             >> "$target_pattern_file"
-          # Exclude anything that requires a bitstream splice.
-          ./bazelisk.sh cquery                               \
-            --noinclude_aspects                              \
-            --output=starlark                                \
-            --starlark:expr='"-{}".format(target.label)'     \
-            --define DISABLE_VERILATOR_BUILD=true            \
-            -- "rdeps(//..., kind(bitstream_splice, //...))" \
+          # Exclude building anything that is tagged as a target for FPGA,
+          # or anything which transitively depends on such a target.
+          ./bazelisk.sh cquery                           \
+            --noinclude_aspects                          \
+            --output=starlark                            \
+            --starlark:expr='"-{}".format(target.label)' \
+            --define DISABLE_VERILATOR_BUILD=true        \
+            -- "rdeps(//..., attr(tags, 'fpga', //...))" \
             >> "$target_pattern_file"
       - name: Build software targets
         run: |
           # Build everything we selected, excluding some tags.
-          ./bazelisk.sh build                                \
-            --remote_download_outputs=minimal                \
-            --build_tests_only=false                         \
-            --define DISABLE_VERILATOR_BUILD=true            \
-            --test_tag_filters=-broken,-fpga,-verilator,-dv \
+          ./bazelisk.sh build                                     \
+            --remote_download_outputs=minimal                     \
+            --build_tests_only=false                              \
+            --define DISABLE_VERILATOR_BUILD=true                 \
+            --test_tag_filters=-broken,-fpga,-qemu,-verilator,-dv \
             --target_pattern_file="$target_pattern_file"
       - name: Run software unit tests
         run: |
-          ./bazelisk.sh test                                          \
-            --build_tests_only=true                                   \
-            --test_output=errors                                      \
-            --define DISABLE_VERILATOR_BUILD=true                     \
-            --test_tag_filters=-broken,-fpga,-verilator,-dv,-silicon \
+          ./bazelisk.sh test                                               \
+            --build_tests_only=true                                        \
+            --test_output=errors                                           \
+            --define DISABLE_VERILATOR_BUILD=true                          \
+            --test_tag_filters=-broken,-fpga,-qemu,-verilator,-dv,-silicon \
             --target_pattern_file="$target_pattern_file"
       - name: Publish Bazel test results
         uses: ./.github/actions/publish-bazel-test-results

@@ -78,9 +78,6 @@ opentitan_test(
         changes_otp = True,
         needs_jtag = True,
         otp = "otp_img_bootstrap_rma",
-        test_cmd = """
-            --bootstrap="{firmware}"
-        """,
         test_harness = "//sw/host/tests/rom/e2e_bootstrap_rma",
     ),
     deps = [
@@ -98,7 +95,7 @@ opentitan_test(
         "//hw/top_earlgrey:fpga_cw340_rom_with_fake_keys": None,
     },
     fpga = fpga_params(
-        # Since the bitstream disables bootstrap, there is no firmware to
+        # Since the OTP configuration disables bootstrap, there is no firmware to
         # load into the chip.  However, opentitan_test wants to build a
         # binary target.  We'll build an unsigned do-nothing binary.
         binaries = {
@@ -106,6 +103,7 @@ opentitan_test(
         },
         otp = "//hw/top_earlgrey/data/otp:img_bootstrap_disabled",
         test_harness = "//sw/host/tests/rom/e2e_bootstrap_disabled",
+        testopt_bootstrap = "False",
     ),
     manifest = None,
 )

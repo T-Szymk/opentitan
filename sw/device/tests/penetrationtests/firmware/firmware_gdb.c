@@ -14,6 +14,7 @@
 #include <stdbool.h>
 
 #include "sw/device/lib/base/status.h"
+#include "sw/device/lib/crypto/impl/status.h"
 #include "sw/device/lib/crypto/include/config.h"
 #include "sw/device/lib/crypto/include/datatypes.h"
 #include "sw/device/lib/crypto/include/entropy_src.h"
@@ -220,9 +221,9 @@ status_t handle_gdb_if_test(ujson_t *uj) {
   pentest_set_trigger_high();
 
   // Cases best use magic values.
-  if (if_check == kHardenedBoolFalse) {
+  if (launder32(if_check) == kHardenedBoolFalse) {
     // In an if loop, check the case again via a HARDENED_CHECK_EQ.
-    HARDENED_CHECK_EQ(launder32(if_check), kHardenedBoolTrue);
+    HARDENED_CHECK_EQ(if_check, kHardenedBoolTrue);
     // The desired state for the attacker.
     uj_output.result = false;
   }

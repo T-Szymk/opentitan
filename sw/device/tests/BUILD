@@ -4558,18 +4558,9 @@ opentitan_test(
         "//hw/top_earlgrey:fpga_cw340_rom_with_fake_keys": None,
     },
     fpga = fpga_params(
-        # We run this as part of the manuf test suite as we want to run it in
-        # the hyper310 exec_env as this is most realistic of a provisioning
-        # scenario where this feature will be used. Without this tag, the test
-        # is not run in CI which causes a CI error ("Verify FPGA Jobs" check
-        # will fail).
-        tags = ["manuf"],
-        test_cmd = """
-            --clear-bitstream
-            --bootstrap="{firmware}"
-            "{firmware:elf}"
-        """,
+        test_cmd = "{firmware:elf}",
         test_harness = "//sw/host/tests/chip/ottf_console_with_gpio_tx_indicator",
+        testopt_clear_before_test = "True",
     ),
     deps = [
         "//hw/top_earlgrey/sw/autogen:top_earlgrey",
@@ -6185,12 +6176,6 @@ _RV_DM_TAP_SEL_LC_STATES = get_lc_items(
         exec_env = dicts.add(
             EARLGREY_SILICON_OWNER_ROM_EXT_ENVS if lc_state == "prod" else {},
             {
-                # TODO: (#30294) Adapt for bkdr_loader: in DEV state the DFT TAP strapping
-                # triggers PRELOAD mode, presenting the bkdr_loader JTAG TAP instead
-                # of the chip DFT TAP. The test must be updated to account for the
-                # bkdr_loader's IDCODE and its done-register handshake before the
-                # downstream DFT TAP becomes visible.
-            } if lc_state == "dev" else {
                 "//hw/top_earlgrey:fpga_cw340_sival": None,
             },
         ),
@@ -6304,6 +6289,7 @@ test_suite(
             ],
             test_cmd = " --expect-fail" if lc_state_val in _LC_STATES_DEBUG_DISALLOWED else "",
             test_harness = "//sw/host/tests/chip/rv_dm:lc_disabled",
+            testopt_bootstrap = "False",
         ),
         silicon = silicon_params(
             needs_jtag = True,
@@ -7116,6 +7102,7 @@ opentitan_test(
         otp = "//sw/device/silicon_creator/manuf/tests:otp_img_rom_exec_disabled_test_unlocked0",
         test_cmd = "--elf={sram_program}",
         test_harness = "//sw/host/tests/chip/rv_core_ibex_isa",
+        testopt_bootstrap = "False",
     ),
     silicon = silicon_params(
         needs_jtag = True,
@@ -7221,6 +7208,7 @@ opentitan_test(
         tags = ["manual"],
         test_cmd = "--elf={sram_program}",
         test_harness = "//sw/host/tests/chip/rv_core_ibex_epmp",
+        testopt_bootstrap = "False",
     ),
     silicon = silicon_params(
         needs_jtag = True,
@@ -7349,6 +7337,7 @@ opentitan_test(
         otp = "//sw/device/silicon_creator/manuf/tests:otp_img_rom_exec_disabled_test_unlocked0",
         test_cmd = "--elf={sram_program}",
         test_harness = "//sw/host/tests/chip/rv_core_ibex_epmp",
+        testopt_bootstrap = "False",
     ),
     silicon = silicon_params(
         binaries = {

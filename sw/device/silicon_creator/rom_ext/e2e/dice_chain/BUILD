@@ -114,11 +114,10 @@ _VARIATION_INTEROP_TEST_CASES = [
             },
             otp = "//sw/device/silicon_creator/rom_ext/e2e:otp_img_secret2_locked_rma",
             test_cmd = """
-                --clear-bitstream
-                --bootstrap={firmware}
                 --second-bootstrap={second}
             """,
             test_harness = "//sw/host/tests/rom_ext/e2e_variation_interop",
+            testopt_clear_before_test = "True",
         ),
     )
     for tc in _VARIATION_INTEROP_TEST_CASES
@@ -165,9 +164,6 @@ opentitan_test(
             ":modify_digest": "modify_digest",
         },
         test_cmd = """
-            --exec="transport init"
-            --exec="fpga clear-bitstream"
-            --exec="fpga load-bitstream {bitstream}"
             --exec="no-op --info='##### Prepare CDI cert page'"
             --exec="bootstrap --clear-uart=true {firmware}"
             --exec="console --non-interactive --exit-success='{exit_success}' --exit-failure='{exit_failure}' --timeout=10s"
@@ -181,6 +177,8 @@ opentitan_test(
             --exec="console --non-interactive --exit-success='{exit_success}' --exit-failure='{exit_failure}' --timeout=10s"
             no-op
         """,
+        testopt_bootstrap = "False",
+        testopt_clear_before_test = "True",
     ),
     deps = [
         "//sw/device/lib/base:status",

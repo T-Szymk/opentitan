@@ -83,6 +83,8 @@ interface otbn_trace_if
 
   input logic [otbn_pkg::UrndLen-1:0] urnd_data,
 
+  input logic [31:0] insn_cnt,
+
   input logic [1:0][otbn_pkg::SideloadKeyWidth-1:0] sideload_key_shares_i,
 
   input logic secure_wipe_req,
@@ -412,38 +414,36 @@ interface otbn_trace_if
 
   end
 
-  // TODO: Enable tracing once simulator is updated. We disable any tracing of KMAC related ISPRs
-  //       until simulator is implemented. Otherwise there are trace mismatches during secure wipe.
-  //       Note, reads can already be traced because these are only emitted depending on SW.
-  assign ispr_write[IsprKmacDataS0] = 1'b0;
-                                      // u_otbn_kmac_if.ispr_kmac_data_s0_wr_i ||
-                                      // u_otbn_kmac_if.sec_wipe_ispr_kmac_data_s0_i;
-  assign ispr_write[IsprKmacDataS1] = 1'b0;
-                                      // u_otbn_kmac_if.ispr_kmac_data_s1_wr_i ||
-                                      // u_otbn_kmac_if.sec_wipe_ispr_kmac_data_s1_i;
+  assign ispr_write[IsprKmacDataS0] = u_otbn_kmac_if.ispr_kmac_data_s0_wr_i ||
+                                      u_otbn_kmac_if.sec_wipe_ispr_kmac_data_s0_i;
+  assign ispr_write[IsprKmacDataS1] = u_otbn_kmac_if.ispr_kmac_data_s1_wr_i ||
+                                      u_otbn_kmac_if.sec_wipe_ispr_kmac_data_s1_i;
 
   // A write can clear certain bits.
-  // TODO: Enable tracing once simulator is updated.
-  assign ispr_write[IsprKmacStatus]      = 1'b0;
-  assign ispr_write_data[IsprKmacStatus] = '0;
+  assign ispr_write[IsprKmacStatus]      = u_otbn_kmac_if.ispr_kmac_status_wr_i;
+  assign ispr_write_data[IsprKmacStatus] = {{(WLEN - 32'd32){1'b0}},
+                                            u_otbn_kmac_if.ispr_kmac_status_wdata_i};
 
   // There is no direct secure wipe.
-  // TODO: Enable tracing once simulator is updated.
-  assign ispr_write[IsprKmacCtrl]      = 1'b0; // u_otbn_kmac_if.ispr_kmac_ctrl_wr_i;
+  assign ispr_write[IsprKmacCtrl]      = u_otbn_kmac_if.ispr_kmac_ctrl_wr_i;
   assign ispr_write_data[IsprKmacCtrl] = {{(WLEN - 32'd32){1'b0}},
                                           u_otbn_kmac_if.ispr_kmac_ctrl_wdata_i};
 
   // There is no direct secure wipe.
-  // TODO: Enable tracing once simulator is updated.
-  assign ispr_write[IsprKmacCfg]       = 1'b0; // u_otbn_kmac_if.ispr_kmac_cfg_wr_i;
+  assign ispr_write[IsprKmacCfg]       = u_otbn_kmac_if.ispr_kmac_cfg_wr_i;
   assign ispr_write_data[IsprKmacCfg]  = {{(WLEN - 32'd32){1'b0}},
                                           u_otbn_kmac_if.ispr_kmac_cfg_wdata_i};
 
   // There is no direct secure wipe.
-  // TODO: Enable tracing once simulator is updated.
-  assign ispr_write[IsprKmacStrb]      = 1'b0; // u_otbn_kmac_if.ispr_kmac_strb_wr_i;
+  assign ispr_write[IsprKmacStrb]      = u_otbn_kmac_if.ispr_kmac_strb_wr_i;
   assign ispr_write_data[IsprKmacStrb] = {{(WLEN - 32'd32){1'b0}},
                                           u_otbn_kmac_if.ispr_kmac_strb_wdata_i};
+
+  assign ispr_write[IsprInsnCnt] = 1'b0;
+  assign ispr_write_data[IsprInsnCnt] = '0;
+
+  assign ispr_read[IsprInsnCnt] = any_ispr_read & (ispr_addr == IsprInsnCnt);
+  assign ispr_read_data[IsprInsnCnt] = {{(WLEN - 32){1'b0}}, insn_cnt};
 
   // Separate per flag group tracking using the flags_t struct so tracer can cleanly present flag
   // accesses.

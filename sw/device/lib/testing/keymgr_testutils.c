@@ -78,11 +78,11 @@ status_t keymgr_testutils_flash_init(
     const keymgr_testutils_secret_t *owner_secret) {
   // Initialize flash secrets.
   if (creator_secret) {
-    write_info_page(flash, kFlashInfoPageIdCreatorSecret, creator_secret,
-                    /*scramble=*/true);
+    TRY(write_info_page(flash, kFlashInfoPageIdCreatorSecret, creator_secret,
+                        /*scramble=*/true));
   }
-  write_info_page(flash, kFlashInfoPageIdOwnerSecret, owner_secret,
-                  /*scramble=*/true);
+  TRY(write_info_page(flash, kFlashInfoPageIdOwnerSecret, owner_secret,
+                      /*scramble=*/true));
   return OK_STATUS();
 }
 
@@ -174,7 +174,7 @@ status_t keymgr_testutils_try_startup(dif_keymgr_t *keymgr, dif_kmac_t *kmac,
 
   if (*keymgr_state == kDifKeymgrStateInvalid ||
       *keymgr_state == kDifKeymgrStateDisabled) {
-    LOG_INFO("Unexpected keymgr state: 0x%x", keymgr_state);
+    LOG_INFO("Unexpected keymgr state: 0x%x", *keymgr_state);
     return INTERNAL();
   }
 

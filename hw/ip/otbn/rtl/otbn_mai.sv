@@ -78,7 +78,7 @@ module otbn_mai
 
   typedef struct packed {
     logic [31-2:0] rsvd;
-    logic          ready;
+    logic          input_ready;
     logic          busy;
   } ispr_mai_status_t;
 
@@ -291,7 +291,7 @@ module otbn_mai
   );
 
   assign in_cnt_tgt      = (in_cnt_load_val_q - mai_cnt_t'('d1));
-  assign in_cnt_done     = ispr_mai_in_mux_sel == in_cnt_tgt;
+  assign in_cnt_done     = (ispr_mai_in_mux_sel == in_cnt_tgt) && ma_in_consume;
   assign in_cnt_overflow = ispr_mai_in_mux_sel == '1;
   assign in_cnt_set      = in_cnt_done || sec_wipe_mai_i;
 
@@ -372,7 +372,7 @@ module otbn_mai
 
   assign out_cnt_load_val_d = sec_wipe_mai_i ? cnt_load_val : in_cnt_load_val_q;
   assign out_cnt_tgt        = (out_cnt_load_val_q - mai_cnt_t'('d1));
-  assign out_cnt_done       = ispr_mai_out_demux_sel == out_cnt_tgt;
+  assign out_cnt_done       = (ispr_mai_out_demux_sel == out_cnt_tgt) && ma_out_ready;
   assign out_cnt_overflow   = ispr_mai_out_demux_sel == '1;
   assign out_cnt_set        = out_cnt_done || sec_wipe_mai_i;
 
@@ -417,10 +417,10 @@ module otbn_mai
   assign ma_start        = ispr_mai_ctrl_wr_i & ispr_mai_ctrl_w.start;
 
   // Status read
-  assign ispr_mai_status.rsvd    = '0;
-  assign ispr_mai_status.ready   = !ma_in_valid_q;
-  assign ispr_mai_status.busy    = ma_busy_q;
-  assign ispr_mai_status_rdata_o = ispr_mai_status;
+  assign ispr_mai_status.rsvd        = '0;
+  assign ispr_mai_status.input_ready = !ma_in_valid_q;
+  assign ispr_mai_status.busy        = ma_busy_q;
+  assign ispr_mai_status_rdata_o     = ispr_mai_status;
 
   // Control read
   assign ispr_mai_ctrl_r.rsvd  = '0;
@@ -429,14 +429,13 @@ module otbn_mai
   assign ispr_mai_ctrl_rdata_o = ispr_mai_ctrl_r;
 
   // Erroneous control accesses
-  assign ispr_mai_sw_err.busy_start     = ma_start & ma_busy_q;
-  // There may not be a write to the input WSRs nor the configuration whilst an execution is
-  // ongoing. This is required to keep data and configuration stable and valid for the whole
-  // execution.
+  // The start bit and configuration may only be written when not busy.
+  assign ispr_mai_sw_err.busy_start     = ma_busy_q & ispr_mai_ctrl_wr_i;
+  // There may not be a write to the input WSRs whilst an execution is ongoing. This is required to
+  // keep data stable and valid as long as elements are dispatched.
   assign ispr_mai_sw_err.busy_write     = ma_in_valid_q &
                                           |{ispr_mai_in0_s0_wr_i, ispr_mai_in0_s1_wr_i,
-                                            ispr_mai_in1_s0_wr_i, ispr_mai_in1_s1_wr_i,
-                                            ispr_mai_ctrl_wr_i};
+                                            ispr_mai_in1_s0_wr_i, ispr_mai_in1_s1_wr_i};
   assign ispr_mai_sw_err.rsvd_csr_write = ispr_mai_ctrl_wr_i & (|ispr_mai_ctrl_w.rsvd);
   // The configuration latched when an execution starts must be valid.
   assign ispr_mai_sw_err.invalid_op     = !(ma_mask_op_d inside
@@ -588,5 +587,11 @@ module otbn_mai
   assign mai_state_err_o              = |mai_state_err;
   // Sw error
   assign mai_software_error_o         = |ispr_mai_sw_err;
+
+  // The masking accelerator requires mod and operation to be stable during an execution. This
+  // check is much simpler when we base it on the busy flag instead of recreating the information
+  // inside the MA. These must remain stable also during a secure wipe.
+  `ASSERT(ModStableDuringExecution_A, ma_busy_q && !$rose(ma_busy_q) |-> $stable(ma_mod_lsw))
+  `ASSERT(MaskOpStableDuringExecution_A, ma_busy_q && !$rose(ma_busy_q) |-> $stable(ma_mask_op_q))
 
 endmodule

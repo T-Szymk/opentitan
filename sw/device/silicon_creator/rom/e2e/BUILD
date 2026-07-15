@@ -391,19 +391,16 @@ opentitan_test(
     ],
 )
 
-# Same as `:e2e_bootup_success`, but the Dev OTP image is spliced into the
-# bitstream before it's sent to the FPGA.
+# Test that we can successfully boot after loading the Dev OTP image onto the
+# FPGA before test execution starts.
 opentitan_test(
     name = "e2e_bootup_success_otp_dev",
     srcs = [":empty_test"],
     exec_env = {
-        "//hw/top_earlgrey:fpga_cw340_rom_with_fake_keys": None,
+        "//hw/top_earlgrey:fpga_cw340_sival": None,
     },
     fpga = fpga_params(
         otp = "//hw/top_earlgrey/data/otp:img_dev",
-        # TODO(lowRISC/opentitan#13603): Remove this "manual" tag when the
-        # bitstream target can fetch pre-spliced bitstream from GCP.
-        tags = ["manual"],
     ),
     linker_script = "//sw/device/lib/testing/test_framework:ottf_ld_silicon_creator_slot_a",
     deps = [
@@ -452,14 +449,7 @@ opentitan_test(
         exit_success = "min_security_version_rom_ext:0(?s:.*)min_security_version_rom_ext:1(?s:.*)" + MSG_TEMPLATE_BFV.format(hex_digits(CONST.BFV.BOOT_POLICY.ROLLBACK)),
         # We clear the bitstream to force any subsequent test to load a
         # fresh bitstream and clear all memories (ie: flash-based boot policy).
-        test_cmd = """
-            --exec="transport init"
-            --exec="fpga load-bitstream {bitstream}"
-            --exec="bootstrap --clear-uart=true {firmware}"
-            --exec="console --non-interactive --exit-success='{exit_success}' --exit-failure='{exit_failure}'"
-            --exec="fpga clear-bitstream\"
-            no-op
-        """,
+        testopt_clear_after_test = "True",
     ),
     linker_script = "//sw/device/lib/testing/test_framework:ottf_ld_silicon_creator_slot_a",
     deps = [

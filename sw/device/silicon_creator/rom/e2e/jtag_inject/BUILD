@@ -32,10 +32,10 @@ package(default_visibility = ["//visibility:public"])
 ]
 
 [
-    # We are using a bitstream with disabled execution so the content of the flash
-    # does not matter but opentitan_test() is unhappy if we don't provide one.
+    # We are using an OTP configuration with disabled execution so the content of the
+    # flash does not matter, but opentitan_test() is unhappy if we don't provide one.
     # Since execution in the ROM is disabled, bootstrap is not possible so we need
-    # to make sure that the test does not try to bootstrap
+    # to make sure that the test does not try to bootstrap.
     opentitan_test(
         name = "sram_program_test_otp_{}".format(lc_state),
         srcs = ["//sw/device/silicon_creator/rom/e2e:empty_test"],
@@ -53,6 +53,7 @@ package(default_visibility = ["//visibility:public"])
                 --elf={sram_program}
             """,
             test_harness = "//sw/host/tests/chip/jtag:sram_load",
+            testopt_bootstrap = "False",
         ),
         deps = [
             "//sw/device/lib/runtime:log",
@@ -94,6 +95,7 @@ test_suite(
             otp = ":img_{}_exec_disabled".format(lc_state),
             test_cmd = " --elf={rom:elf}",
             test_harness = "//sw/host/tests/rom/e2e_openocd_debug_test:asm_interrupt_handler",
+            testopt_bootstrap = "False",
         ),
         deps = [
             "//sw/device/lib/runtime:log",
@@ -135,6 +137,7 @@ test_suite(
             otp = ":img_{}_exec_disabled".format(lc_state),
             test_cmd = " --elf={rom:elf}",
             test_harness = "//sw/host/tests/rom/e2e_openocd_debug_test:shutdown_execution_asm",
+            testopt_bootstrap = "False",
         ),
         deps = [
             "//sw/device/lib/runtime:log",
@@ -177,6 +180,7 @@ test_suite(
             tags = ["broken"],
             test_cmd = " --elf={rom:elf}",
             test_harness = "//sw/host/tests/rom/e2e_openocd_debug_test:asm_watchdog_bark",
+            testopt_bootstrap = "False",
         ),
         deps = [
             "//sw/device/lib/runtime:log",
@@ -219,6 +223,7 @@ test_suite(
             tags = ["broken"],
             test_cmd = " --elf={rom:elf}",
             test_harness = "//sw/host/tests/rom/e2e_openocd_debug_test:asm_watchdog_bite",
+            testopt_bootstrap = "False",
         ),
         deps = [
             "//sw/device/lib/runtime:log",
@@ -267,6 +272,7 @@ LC_STATES_DEBUG_DISALLOWED = [
             otp = ":img_{}_exec_disabled".format(lc_state),
             test_cmd = " --elf={rom:elf}" + (" --expect-fail" if lc_state_val in LC_STATES_DEBUG_DISALLOWED else " "),
             test_harness = "//sw/host/tests/rom/e2e_openocd_debug_test:debug_test",
+            testopt_bootstrap = "False",
         ),
         deps = [
             "//sw/device/lib/runtime:log",

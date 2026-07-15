@@ -21,13 +21,6 @@ config_setting(
 )
 
 config_setting(
-    name = "release_build",
-    define_values = {
-        "release_build": "true",
-    },
-)
-
-config_setting(
     name = "disable_null_checks",
     define_values = {
         "disable_null_checks": "true",
@@ -72,7 +65,7 @@ cc_library(
     srcs = ["cryptolib_build_info.c"],
     hdrs = ["//sw/device/lib/crypto/include:cryptolib_build_info.h"],
     defines = select({
-        ":release_build": ["CRYPTOLIB_IS_RELEASED=true"],
+        "//rules:stamp_flag_config": ["CRYPTOLIB_IS_RELEASED=true"],
         "//conditions:default": ["CRYPTOLIB_IS_RELEASED=false"],
     }),
     deps = [
@@ -156,6 +149,23 @@ cc_library(
         ":keyblob",
         "//sw/device/lib/crypto/drivers:hmac",
         "//sw/device/lib/crypto/impl/ecc:p384",
+        "//sw/device/lib/crypto/include:datatypes",
+    ],
+)
+
+cc_library(
+    name = "mldsa",
+    srcs = ["mldsa.c"],
+    hdrs = ["//sw/device/lib/crypto/include:mldsa.h"],
+    target_compatible_with = [OPENTITAN_CPU],
+    deps = [
+        ":config",
+        ":integrity",
+        ":keyblob",
+        ":sha2",
+        ":sha3",
+        "//sw/device/lib/base:hardened_memory",
+        "//sw/device/lib/crypto/impl/mldsa",
         "//sw/device/lib/crypto/include:datatypes",
     ],
 )
@@ -489,17 +499,6 @@ cc_library(
     deps = [
         "//sw/device/lib/base:hardened_memory",
         "//sw/device/lib/crypto/drivers:entropy",
-        "//sw/device/lib/crypto/include:datatypes",
-    ],
-)
-
-cc_library(
-    name = "mldsa",
-    srcs = ["mldsa.c"],
-    hdrs = ["//sw/device/lib/crypto/include:mldsa.h"],
-    target_compatible_with = [OPENTITAN_CPU],
-    deps = [
-        ":status",
         "//sw/device/lib/crypto/include:datatypes",
     ],
 )
