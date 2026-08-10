@@ -10,6 +10,7 @@ class Cmd(IntEnum):
     EXECUTE = 0xd8
     SEC_WIPE_DMEM = 0xc3
     SEC_WIPE_IMEM = 0x1e
+    RESUME = 0xa6
 
 
 class Status(IntEnum):
@@ -19,6 +20,7 @@ class Status(IntEnum):
     BUSY_SEC_WIPE_DMEM = 0x02
     BUSY_SEC_WIPE_IMEM = 0x03
     BUSY_SEC_WIPE_INT = 0x04
+    PAUSED = 0x05
     LOCKED = 0xFF
 
 
@@ -76,14 +78,14 @@ class CsrAddrs(IntEnum):
     MOD6 = 0x7d6
     MOD7 = 0x7d7
     RND_PREFETCH = 0x7d8
-    KMAC_STATUS = 0x7d9
-    KMAC_CTRL = 0x7da
-    KMAC_CFG = 0x7db
-    KMAC_STRB = 0x7dc
+    KMAC_STATUS = 0x7db
+    KMAC_CTRL = 0x7dc
+    KMAC_CFG = 0x7dd
+    KMAC_STRB = 0x7de
     MAI_CTRL = 0x7e0
     RND = 0xfc0
     URND = 0xfc1
-    INSN_CNT = 0xfc2
+    INSN_CNT = 0xfc3
     MAI_STATUS = 0xfca
 
 

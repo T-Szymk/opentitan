@@ -95,7 +95,8 @@ package otbn_pkg;
   typedef enum logic [7:0] {
     CmdExecute     = 8'hd8,
     CmdSecWipeDmem = 8'hc3,
-    CmdSecWipeImem = 8'h1e
+    CmdSecWipeImem = 8'h1e,
+    CmdResume      = 8'ha6
   } cmd_e;
 
   // Status register values. See the STATUS register description in otbn.hjson for details.
@@ -105,6 +106,7 @@ package otbn_pkg;
     StatusBusySecWipeDmem = 8'h02,
     StatusBusySecWipeImem = 8'h03,
     StatusBusySecWipeInt  = 8'h04,
+    StatusPaused          = 8'h05,
     StatusLocked          = 8'hFF
   } status_e;
 
@@ -412,16 +414,16 @@ package otbn_pkg;
     CsrMod6        = 12'h7D6,
     CsrMod7        = 12'h7D7,
     CsrRndPrefetch = 12'h7D8,
-    CsrKmacStatus  = 12'h7d9,
-    CsrKmacCtrl    = 12'h7da,
-    CsrKmacCfg     = 12'h7db,
-    CsrKmacStrb    = 12'h7dc,
+    CsrKmacStatus  = 12'h7db,
+    CsrKmacCtrl    = 12'h7dc,
+    CsrKmacCfg     = 12'h7dd,
+    CsrKmacStrb    = 12'h7de,
     CsrMaiCtrl     = 12'h7e0,
 
     // 0xFC0-0xFFF Custom read-only
     CsrRnd         = 12'hFC0,
     CsrUrnd        = 12'hFC1,
-    CsrInsnCnt     = 12'hFC2,
+    CsrInsnCnt     = 12'hFC3,
     CsrMaiStatus   = 12'hFCA
   } csr_e;
 
@@ -505,6 +507,7 @@ package otbn_pkg;
   typedef struct packed {
     insn_subset_e           subset;
     logic                   ecall_insn;
+    logic                   wfi_insn;
     logic                   ld_insn;
     logic                   st_insn;
     logic                   branch_insn;
