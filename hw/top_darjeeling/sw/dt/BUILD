@@ -9,6 +9,7 @@ package(default_visibility = ["//visibility:public"])
 TARGETS = [
     "sim_dv",
     "sim_verilator",
+    "fpga_cw340",
 ]
 
 [

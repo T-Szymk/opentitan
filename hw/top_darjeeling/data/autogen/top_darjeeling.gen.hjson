@@ -18251,6 +18251,314 @@
         special_signals: []
       }
     }
+    {
+      name: cw340
+      chiplevel:
+      {
+        port_overrides:
+        {
+          rv_dm.next_dm_addr:
+          {
+            unused: true
+          }
+          soc_proxy.integrator_id:
+          {
+            unused: true
+          }
+          soc_proxy.soc_lsio_trigger:
+          {
+            unused: true
+          }
+          soc_proxy.soc_gpi_async:
+          {
+            unused: true
+          }
+          soc_proxy.soc_gpo_async:
+          {
+            unused: true
+          }
+          soc_proxy.soc_wkup_async:
+          {
+            unused: true
+          }
+          soc_proxy.misc_tl_h2d:
+          {
+            feedthrough: true
+          }
+          soc_proxy.misc_tl_d2h:
+          {
+            feedthrough: true
+          }
+          ac_range_check.range_check_overwrite:
+          {
+            feedthrough: true
+          }
+          ac_range_check.ctn_filtered_tl_h2d:
+          {
+            signal: ctn_tl_h2d[0]
+          }
+          ac_range_check.ctn_filtered_tl_d2h:
+          {
+            signal: ctn_tl_d2h[0]
+          }
+          racl_ctrl.racl_policies:
+          {
+            unused: true
+          }
+          racl_ctrl.racl_error_external:
+          {
+            signal: ext_racl_error
+          }
+          clkmgr.cg_en:
+          {
+            unused: true
+          }
+          rstmgr.rst_en:
+          {
+            unused: true
+          }
+          pwrmgr.ext_rst_ack:
+          {
+            unused: true
+          }
+          pwrmgr.boot_status:
+          {
+            signal: pwrmgr_boot_status
+          }
+          soc_dbg_ctrl.halt_cpu_boot:
+          {
+            unused: true
+          }
+          soc_dbg_ctrl.soc_dbg_policy_bus:
+          {
+            unused: true
+          }
+          ast.lc_hw_debug_en:
+          {
+            unused: true
+          }
+          ast.lc_dft_en:
+          {
+            signal: lc_dft_en
+          }
+          dma.sys:
+          {
+            unused: true
+          }
+          mbx.tl_mbx:
+          {
+            unused: true
+          }
+          dbg.tl_dbg:
+          {
+            signal: dmi
+          }
+          otp_macro.ext_voltage_h:
+          {
+            unused: true
+          }
+          mbx0.doe_intr:
+          {
+            unused: true
+          }
+          mbx0.doe_intr_en:
+          {
+            unused: true
+          }
+          mbx0.doe_intr_support:
+          {
+            unused: true
+          }
+          mbx0.doe_async_msg_support:
+          {
+            unused: true
+          }
+          mbx1.doe_intr:
+          {
+            unused: true
+          }
+          mbx1.doe_intr_en:
+          {
+            unused: true
+          }
+          mbx1.doe_intr_support:
+          {
+            unused: true
+          }
+          mbx1.doe_async_msg_support:
+          {
+            unused: true
+          }
+          mbx2.doe_intr:
+          {
+            unused: true
+          }
+          mbx2.doe_intr_en:
+          {
+            unused: true
+          }
+          mbx2.doe_intr_support:
+          {
+            unused: true
+          }
+          mbx2.doe_async_msg_support:
+          {
+            unused: true
+          }
+          mbx3.doe_intr:
+          {
+            unused: true
+          }
+          mbx3.doe_intr_en:
+          {
+            unused: true
+          }
+          mbx3.doe_intr_support:
+          {
+            unused: true
+          }
+          mbx3.doe_async_msg_support:
+          {
+            unused: true
+          }
+          mbx4.doe_intr:
+          {
+            unused: true
+          }
+          mbx4.doe_intr_en:
+          {
+            unused: true
+          }
+          mbx4.doe_intr_support:
+          {
+            unused: true
+          }
+          mbx4.doe_async_msg_support:
+          {
+            unused: true
+          }
+          mbx5.doe_intr:
+          {
+            unused: true
+          }
+          mbx5.doe_intr_en:
+          {
+            unused: true
+          }
+          mbx5.doe_intr_support:
+          {
+            unused: true
+          }
+          mbx5.doe_async_msg_support:
+          {
+            unused: true
+          }
+          mbx6.doe_intr:
+          {
+            unused: true
+          }
+          mbx6.doe_intr_en:
+          {
+            unused: true
+          }
+          mbx6.doe_intr_support:
+          {
+            unused: true
+          }
+          mbx6.doe_async_msg_support:
+          {
+            unused: true
+          }
+          mbx_jtag.doe_intr:
+          {
+            unused: true
+          }
+          mbx_jtag.doe_intr_en:
+          {
+            unused: true
+          }
+          mbx_jtag.doe_intr_support:
+          {
+            unused: true
+          }
+          mbx_jtag.doe_async_msg_support:
+          {
+            unused: true
+          }
+          mbx_pcie0.doe_intr:
+          {
+            unused: true
+          }
+          mbx_pcie0.doe_intr_en:
+          {
+            unused: true
+          }
+          mbx_pcie0.doe_intr_support:
+          {
+            unused: true
+          }
+          mbx_pcie0.doe_async_msg_support:
+          {
+            unused: true
+          }
+          mbx_pcie1.doe_intr:
+          {
+            unused: true
+          }
+          mbx_pcie1.doe_intr_en:
+          {
+            unused: true
+          }
+          mbx_pcie1.doe_intr_support:
+          {
+            unused: true
+          }
+          mbx_pcie1.doe_async_msg_support:
+          {
+            unused: true
+          }
+        }
+      }
+      pinout:
+      {
+        remove_ports: []
+        remove_pads:
+        [
+          OTP_EXT_VOLT
+        ]
+        add_pads:
+        [
+          {
+            name: IO_CLK
+            type: InputStd
+            bank: VIO
+            connection: manual
+            desc: FPGA reference clock input, drives clkgen_xil_ultrascale.
+            port_type: inout
+          }
+          {
+            name: IO_CLKOUT
+            type: BidirStd
+            bank: VIO
+            connection: manual
+            desc: ChipWhisperer SCA clock output (reserved, unused for v1 bring-up).
+            port_type: inout
+          }
+          {
+            name: IO_TRIGGER
+            type: BidirStd
+            bank: VIO
+            connection: manual
+            desc: ChipWhisperer SCA trigger output (reserved, unused for v1 bring-up).
+            port_type: inout
+          }
+        ]
+      }
+      pinmux:
+      {
+        special_signals: []
+      }
+    }
   ]
   incoming_alert: {}
   incoming_interrupt: {}
@@ -30047,6 +30355,7 @@
         {
           asic: alert_handler_crashdump
           verilator: alert_handler_crashdump
+          cw340: alert_handler_crashdump
         }
         width: 1
         type: uni
@@ -30066,6 +30375,7 @@
         {
           asic: alert_handler_crashdump
           verilator: alert_handler_crashdump
+          cw340: alert_handler_crashdump
         }
         width: 1
         type: uni
@@ -30085,6 +30395,7 @@
         {
           asic: alert_handler_esc_rx
           verilator: alert_handler_esc_rx
+          cw340: alert_handler_esc_rx
         }
         width: 1
         type: uni
@@ -30104,6 +30415,7 @@
         {
           asic: alert_handler_esc_rx
           verilator: alert_handler_esc_rx
+          cw340: alert_handler_esc_rx
         }
         width: 1
         type: uni
@@ -30123,6 +30435,7 @@
         {
           asic: alert_handler_esc_tx
           verilator: alert_handler_esc_tx
+          cw340: alert_handler_esc_tx
         }
         width: 1
         type: uni
@@ -30142,6 +30455,7 @@
         {
           asic: alert_handler_esc_tx
           verilator: alert_handler_esc_tx
+          cw340: alert_handler_esc_tx
         }
         width: 1
         type: uni
@@ -30161,6 +30475,7 @@
         {
           asic: aon_timer_nmi_wdog_timer_bark
           verilator: aon_timer_nmi_wdog_timer_bark
+          cw340: aon_timer_nmi_wdog_timer_bark
         }
         width: 1
         type: uni
@@ -30180,6 +30495,7 @@
         {
           asic: aon_timer_nmi_wdog_timer_bark
           verilator: aon_timer_nmi_wdog_timer_bark
+          cw340: aon_timer_nmi_wdog_timer_bark
         }
         width: 1
         type: uni
@@ -30199,6 +30515,7 @@
         {
           asic: otp_ctrl_sram_otp_key_req
           verilator: otp_ctrl_sram_otp_key_req
+          cw340: otp_ctrl_sram_otp_key_req
         }
         width: 1
         type: req_rsp
@@ -30218,6 +30535,7 @@
         {
           asic: otp_ctrl_sram_otp_key_rsp
           verilator: otp_ctrl_sram_otp_key_rsp
+          cw340: otp_ctrl_sram_otp_key_rsp
         }
         width: 1
         type: req_rsp
@@ -30237,6 +30555,7 @@
         {
           asic: otp_ctrl_sram_otp_key_req
           verilator: otp_ctrl_sram_otp_key_req
+          cw340: otp_ctrl_sram_otp_key_req
         }
         width: 1
         type: req_rsp
@@ -30256,6 +30575,7 @@
         {
           asic: otp_ctrl_sram_otp_key_rsp
           verilator: otp_ctrl_sram_otp_key_rsp
+          cw340: otp_ctrl_sram_otp_key_rsp
         }
         width: 1
         type: req_rsp
@@ -30275,6 +30595,7 @@
         {
           asic: pwrmgr_pwr_otp_req
           verilator: pwrmgr_pwr_otp_req
+          cw340: pwrmgr_pwr_otp_req
         }
         width: 1
         type: req_rsp
@@ -30294,6 +30615,7 @@
         {
           asic: pwrmgr_pwr_otp_rsp
           verilator: pwrmgr_pwr_otp_rsp
+          cw340: pwrmgr_pwr_otp_rsp
         }
         width: 1
         type: req_rsp
@@ -30313,6 +30635,7 @@
         {
           asic: pwrmgr_pwr_otp_req
           verilator: pwrmgr_pwr_otp_req
+          cw340: pwrmgr_pwr_otp_req
         }
         width: 1
         type: req_rsp
@@ -30332,6 +30655,7 @@
         {
           asic: pwrmgr_pwr_otp_rsp
           verilator: pwrmgr_pwr_otp_rsp
+          cw340: pwrmgr_pwr_otp_rsp
         }
         width: 1
         type: req_rsp
@@ -30351,6 +30675,7 @@
         {
           asic: pwrmgr_pwr_lc_req
           verilator: pwrmgr_pwr_lc_req
+          cw340: pwrmgr_pwr_lc_req
         }
         width: 1
         type: req_rsp
@@ -30370,6 +30695,7 @@
         {
           asic: pwrmgr_pwr_lc_rsp
           verilator: pwrmgr_pwr_lc_rsp
+          cw340: pwrmgr_pwr_lc_rsp
         }
         width: 1
         type: req_rsp
@@ -30389,6 +30715,7 @@
         {
           asic: pwrmgr_pwr_lc_req
           verilator: pwrmgr_pwr_lc_req
+          cw340: pwrmgr_pwr_lc_req
         }
         width: 1
         type: req_rsp
@@ -30408,6 +30735,7 @@
         {
           asic: pwrmgr_pwr_lc_rsp
           verilator: pwrmgr_pwr_lc_rsp
+          cw340: pwrmgr_pwr_lc_rsp
         }
         width: 1
         type: req_rsp
@@ -30427,6 +30755,7 @@
         {
           asic: pwrmgr_strap
           verilator: pwrmgr_strap
+          cw340: pwrmgr_strap
         }
         width: 1
         type: uni
@@ -30446,6 +30775,7 @@
         {
           asic: pwrmgr_strap
           verilator: pwrmgr_strap
+          cw340: pwrmgr_strap
         }
         width: 1
         type: uni
@@ -30465,6 +30795,7 @@
         {
           asic: pwrmgr_low_power
           verilator: pwrmgr_low_power
+          cw340: pwrmgr_low_power
         }
         width: 1
         type: uni
@@ -30484,6 +30815,7 @@
         {
           asic: pwrmgr_low_power
           verilator: pwrmgr_low_power
+          cw340: pwrmgr_low_power
         }
         width: 1
         type: uni
@@ -30503,6 +30835,7 @@
         {
           asic: pwrmgr_fetch_en
           verilator: pwrmgr_fetch_en
+          cw340: pwrmgr_fetch_en
         }
         width: 1
         type: uni
@@ -30522,6 +30855,7 @@
         {
           asic: pwrmgr_fetch_en
           verilator: pwrmgr_fetch_en
+          cw340: pwrmgr_fetch_en
         }
         width: 1
         type: uni
@@ -30541,6 +30875,7 @@
         {
           asic: pwrmgr_rom_ctrl
           verilator: pwrmgr_rom_ctrl
+          cw340: pwrmgr_rom_ctrl
         }
         width: 3
         type: uni
@@ -30560,6 +30895,7 @@
         {
           asic: pwrmgr_rom_ctrl
           verilator: pwrmgr_rom_ctrl
+          cw340: pwrmgr_rom_ctrl
         }
         width: 3
         type: uni
@@ -30579,6 +30915,7 @@
         {
           asic: pwrmgr_boot_status
           verilator: pwrmgr_boot_status
+          cw340: pwrmgr_boot_status
         }
         width: 1
         type: uni
@@ -30598,6 +30935,7 @@
         {
           asic: pwrmgr_boot_status
           verilator: pwrmgr_boot_status
+          cw340: pwrmgr_boot_status
         }
         width: 1
         type: uni
@@ -30617,6 +30955,7 @@
         {
           asic: dma_lsio_trigger
           verilator: dma_lsio_trigger
+          cw340: dma_lsio_trigger
         }
         width: 1
         type: uni
@@ -30636,6 +30975,7 @@
         {
           asic: dma_lsio_trigger
           verilator: dma_lsio_trigger
+          cw340: dma_lsio_trigger
         }
         width: 1
         type: uni
@@ -30655,6 +30995,7 @@
         {
           asic: i2c0_lsio_trigger
           verilator: i2c0_lsio_trigger
+          cw340: i2c0_lsio_trigger
         }
         width: 1
         type: uni
@@ -30674,6 +31015,7 @@
         {
           asic: i2c0_lsio_trigger
           verilator: i2c0_lsio_trigger
+          cw340: i2c0_lsio_trigger
         }
         width: 1
         type: uni
@@ -30693,6 +31035,7 @@
         {
           asic: spi_host0_lsio_trigger
           verilator: spi_host0_lsio_trigger
+          cw340: spi_host0_lsio_trigger
         }
         width: 1
         type: uni
@@ -30712,6 +31055,7 @@
         {
           asic: spi_host0_lsio_trigger
           verilator: spi_host0_lsio_trigger
+          cw340: spi_host0_lsio_trigger
         }
         width: 1
         type: uni
@@ -30731,6 +31075,7 @@
         {
           asic: uart0_lsio_trigger
           verilator: uart0_lsio_trigger
+          cw340: uart0_lsio_trigger
         }
         width: 1
         type: uni
@@ -30750,6 +31095,7 @@
         {
           asic: uart0_lsio_trigger
           verilator: uart0_lsio_trigger
+          cw340: uart0_lsio_trigger
         }
         width: 1
         type: uni
@@ -30769,6 +31115,7 @@
         {
           asic: clkmgr_idle
           verilator: clkmgr_idle
+          cw340: clkmgr_idle
         }
         width: 4
         type: uni
@@ -30788,6 +31135,7 @@
         {
           asic: clkmgr_idle
           verilator: clkmgr_idle
+          cw340: clkmgr_idle
         }
         width: 4
         type: uni
@@ -30807,6 +31155,7 @@
         {
           asic: lc_ctrl_lc_dft_en
           verilator: lc_ctrl_lc_dft_en
+          cw340: lc_ctrl_lc_dft_en
         }
         width: 1
         type: uni
@@ -30826,6 +31175,7 @@
         {
           asic: lc_ctrl_lc_dft_en
           verilator: lc_ctrl_lc_dft_en
+          cw340: lc_ctrl_lc_dft_en
         }
         width: 1
         type: uni
@@ -30845,6 +31195,7 @@
         {
           asic: lc_ctrl_lc_hw_debug_en
           verilator: lc_ctrl_lc_hw_debug_en
+          cw340: lc_ctrl_lc_hw_debug_en
         }
         width: 1
         type: uni
@@ -30864,6 +31215,7 @@
         {
           asic: lc_ctrl_lc_hw_debug_en
           verilator: lc_ctrl_lc_hw_debug_en
+          cw340: lc_ctrl_lc_hw_debug_en
         }
         width: 1
         type: uni
@@ -30883,6 +31235,7 @@
         {
           asic: lc_ctrl_lc_escalate_en
           verilator: lc_ctrl_lc_escalate_en
+          cw340: lc_ctrl_lc_escalate_en
         }
         width: 1
         type: uni
@@ -30902,6 +31255,7 @@
         {
           asic: lc_ctrl_lc_escalate_en
           verilator: lc_ctrl_lc_escalate_en
+          cw340: lc_ctrl_lc_escalate_en
         }
         width: 1
         type: uni
@@ -30921,6 +31275,7 @@
         {
           asic: rv_core_ibex_crash_dump
           verilator: rv_core_ibex_crash_dump
+          cw340: rv_core_ibex_crash_dump
         }
         width: 1
         type: uni
@@ -30940,6 +31295,7 @@
         {
           asic: rv_core_ibex_crash_dump
           verilator: rv_core_ibex_crash_dump
+          cw340: rv_core_ibex_crash_dump
         }
         width: 1
         type: uni
@@ -30959,6 +31315,7 @@
         {
           asic: rv_core_ibex_pwrmgr
           verilator: rv_core_ibex_pwrmgr
+          cw340: rv_core_ibex_pwrmgr
         }
         width: 1
         type: uni
@@ -30978,6 +31335,7 @@
         {
           asic: rv_core_ibex_pwrmgr
           verilator: rv_core_ibex_pwrmgr
+          cw340: rv_core_ibex_pwrmgr
         }
         width: 1
         type: uni
@@ -30997,6 +31355,7 @@
         {
           asic: rv_dm_ndmreset_req
           verilator: rv_dm_ndmreset_req
+          cw340: rv_dm_ndmreset_req
         }
         width: 1
         type: uni
@@ -31016,6 +31375,7 @@
         {
           asic: rv_dm_ndmreset_req
           verilator: rv_dm_ndmreset_req
+          cw340: rv_dm_ndmreset_req
         }
         width: 1
         type: uni
@@ -31035,6 +31395,7 @@
         {
           asic: soc_proxy_dma_tl_h2d
           verilator: soc_proxy_dma_tl_h2d
+          cw340: soc_proxy_dma_tl_h2d
         }
         width: 1
         type: uni
@@ -31054,6 +31415,7 @@
         {
           asic: soc_proxy_dma_tl_h2d
           verilator: soc_proxy_dma_tl_h2d
+          cw340: soc_proxy_dma_tl_h2d
         }
         width: 1
         type: uni
@@ -31073,6 +31435,7 @@
         {
           asic: soc_proxy_dma_tl_d2h
           verilator: soc_proxy_dma_tl_d2h
+          cw340: soc_proxy_dma_tl_d2h
         }
         width: 1
         type: uni
@@ -31092,6 +31455,7 @@
         {
           asic: soc_proxy_dma_tl_d2h
           verilator: soc_proxy_dma_tl_d2h
+          cw340: soc_proxy_dma_tl_d2h
         }
         width: 1
         type: uni
@@ -31111,6 +31475,7 @@
         {
           asic: soc_proxy_ctn_tl_h2d
           verilator: soc_proxy_ctn_tl_h2d
+          cw340: soc_proxy_ctn_tl_h2d
         }
         width: 1
         type: uni
@@ -31130,6 +31495,7 @@
         {
           asic: soc_proxy_ctn_tl_h2d
           verilator: soc_proxy_ctn_tl_h2d
+          cw340: soc_proxy_ctn_tl_h2d
         }
         width: 1
         type: uni
@@ -31149,6 +31515,7 @@
         {
           asic: soc_proxy_ctn_tl_d2h
           verilator: soc_proxy_ctn_tl_d2h
+          cw340: soc_proxy_ctn_tl_d2h
         }
         width: 1
         type: uni
@@ -31168,6 +31535,7 @@
         {
           asic: soc_proxy_ctn_tl_d2h
           verilator: soc_proxy_ctn_tl_d2h
+          cw340: soc_proxy_ctn_tl_d2h
         }
         width: 1
         type: uni
@@ -31187,6 +31555,7 @@
         {
           asic: pwrmgr_wakeups
           verilator: pwrmgr_wakeups
+          cw340: pwrmgr_wakeups
         }
         width: 1
         type: uni
@@ -31206,6 +31575,7 @@
         {
           asic: pwrmgr_wakeups
           verilator: pwrmgr_wakeups
+          cw340: pwrmgr_wakeups
         }
         width: 1
         type: uni
@@ -31225,6 +31595,7 @@
         {
           asic: soc_proxy_core_tl_req
           verilator: soc_proxy_core_tl_req
+          cw340: soc_proxy_core_tl_req
         }
         width: 1
         type: req_rsp
@@ -31244,6 +31615,7 @@
         {
           asic: soc_proxy_core_tl_rsp
           verilator: soc_proxy_core_tl_rsp
+          cw340: soc_proxy_core_tl_rsp
         }
         width: 1
         type: req_rsp
@@ -31263,6 +31635,7 @@
         {
           asic: soc_proxy_core_tl_req
           verilator: soc_proxy_core_tl_req
+          cw340: soc_proxy_core_tl_req
         }
         width: 1
         type: req_rsp
@@ -31282,6 +31655,7 @@
         {
           asic: soc_proxy_core_tl_rsp
           verilator: soc_proxy_core_tl_rsp
+          cw340: soc_proxy_core_tl_rsp
         }
         width: 1
         type: req_rsp
@@ -31301,6 +31675,7 @@
         {
           asic: soc_proxy_ctn_tl_req
           verilator: soc_proxy_ctn_tl_req
+          cw340: soc_proxy_ctn_tl_req
         }
         width: 1
         type: req_rsp
@@ -31320,6 +31695,7 @@
         {
           asic: soc_proxy_ctn_tl_rsp
           verilator: soc_proxy_ctn_tl_rsp
+          cw340: soc_proxy_ctn_tl_rsp
         }
         width: 1
         type: req_rsp
@@ -31339,6 +31715,7 @@
         {
           asic: soc_proxy_ctn_tl_req
           verilator: soc_proxy_ctn_tl_req
+          cw340: soc_proxy_ctn_tl_req
         }
         width: 1
         type: req_rsp
@@ -31358,6 +31735,7 @@
         {
           asic: soc_proxy_ctn_tl_rsp
           verilator: soc_proxy_ctn_tl_rsp
+          cw340: soc_proxy_ctn_tl_rsp
         }
         width: 1
         type: req_rsp
@@ -31377,6 +31755,7 @@
         {
           asic: pwrmgr_tl_req
           verilator: pwrmgr_tl_req
+          cw340: pwrmgr_tl_req
         }
         width: 1
         type: req_rsp
@@ -31396,6 +31775,7 @@
         {
           asic: pwrmgr_tl_rsp
           verilator: pwrmgr_tl_rsp
+          cw340: pwrmgr_tl_rsp
         }
         width: 1
         type: req_rsp
@@ -31415,6 +31795,7 @@
         {
           asic: pwrmgr_tl_req
           verilator: pwrmgr_tl_req
+          cw340: pwrmgr_tl_req
         }
         width: 1
         type: req_rsp
@@ -31434,6 +31815,7 @@
         {
           asic: pwrmgr_tl_rsp
           verilator: pwrmgr_tl_rsp
+          cw340: pwrmgr_tl_rsp
         }
         width: 1
         type: req_rsp
@@ -31453,6 +31835,7 @@
         {
           asic: rstmgr_tl_req
           verilator: rstmgr_tl_req
+          cw340: rstmgr_tl_req
         }
         width: 1
         type: req_rsp
@@ -31472,6 +31855,7 @@
         {
           asic: rstmgr_tl_rsp
           verilator: rstmgr_tl_rsp
+          cw340: rstmgr_tl_rsp
         }
         width: 1
         type: req_rsp
@@ -31491,6 +31875,7 @@
         {
           asic: rstmgr_tl_req
           verilator: rstmgr_tl_req
+          cw340: rstmgr_tl_req
         }
         width: 1
         type: req_rsp
@@ -31510,6 +31895,7 @@
         {
           asic: rstmgr_tl_rsp
           verilator: rstmgr_tl_rsp
+          cw340: rstmgr_tl_rsp
         }
         width: 1
         type: req_rsp
@@ -31529,6 +31915,7 @@
         {
           asic: clkmgr_tl_req
           verilator: clkmgr_tl_req
+          cw340: clkmgr_tl_req
         }
         width: 1
         type: req_rsp
@@ -31548,6 +31935,7 @@
         {
           asic: clkmgr_tl_rsp
           verilator: clkmgr_tl_rsp
+          cw340: clkmgr_tl_rsp
         }
         width: 1
         type: req_rsp
@@ -31567,6 +31955,7 @@
         {
           asic: clkmgr_tl_req
           verilator: clkmgr_tl_req
+          cw340: clkmgr_tl_req
         }
         width: 1
         type: req_rsp
@@ -31586,6 +31975,7 @@
         {
           asic: clkmgr_tl_rsp
           verilator: clkmgr_tl_rsp
+          cw340: clkmgr_tl_rsp
         }
         width: 1
         type: req_rsp
@@ -31605,6 +31995,7 @@
         {
           asic: sram_ctrl_ret_regs_tl_req
           verilator: sram_ctrl_ret_regs_tl_req
+          cw340: sram_ctrl_ret_regs_tl_req
         }
         width: 1
         type: req_rsp
@@ -31624,6 +32015,7 @@
         {
           asic: sram_ctrl_ret_regs_tl_rsp
           verilator: sram_ctrl_ret_regs_tl_rsp
+          cw340: sram_ctrl_ret_regs_tl_rsp
         }
         width: 1
         type: req_rsp
@@ -31643,6 +32035,7 @@
         {
           asic: sram_ctrl_ret_regs_tl_req
           verilator: sram_ctrl_ret_regs_tl_req
+          cw340: sram_ctrl_ret_regs_tl_req
         }
         width: 1
         type: req_rsp
@@ -31662,6 +32055,7 @@
         {
           asic: sram_ctrl_ret_regs_tl_rsp
           verilator: sram_ctrl_ret_regs_tl_rsp
+          cw340: sram_ctrl_ret_regs_tl_rsp
         }
         width: 1
         type: req_rsp
@@ -31681,6 +32075,7 @@
         {
           asic: sram_ctrl_ret_ram_tl_req
           verilator: sram_ctrl_ret_ram_tl_req
+          cw340: sram_ctrl_ret_ram_tl_req
         }
         width: 1
         type: req_rsp
@@ -31700,6 +32095,7 @@
         {
           asic: sram_ctrl_ret_ram_tl_rsp
           verilator: sram_ctrl_ret_ram_tl_rsp
+          cw340: sram_ctrl_ret_ram_tl_rsp
         }
         width: 1
         type: req_rsp
@@ -31719,6 +32115,7 @@
         {
           asic: sram_ctrl_ret_ram_tl_req
           verilator: sram_ctrl_ret_ram_tl_req
+          cw340: sram_ctrl_ret_ram_tl_req
         }
         width: 1
         type: req_rsp
@@ -31738,6 +32135,7 @@
         {
           asic: sram_ctrl_ret_ram_tl_rsp
           verilator: sram_ctrl_ret_ram_tl_rsp
+          cw340: sram_ctrl_ret_ram_tl_rsp
         }
         width: 1
         type: req_rsp
@@ -31757,6 +32155,7 @@
         {
           asic: aon_timer_tl_req
           verilator: aon_timer_tl_req
+          cw340: aon_timer_tl_req
         }
         width: 1
         type: req_rsp
@@ -31776,6 +32175,7 @@
         {
           asic: aon_timer_tl_rsp
           verilator: aon_timer_tl_rsp
+          cw340: aon_timer_tl_rsp
         }
         width: 1
         type: req_rsp
@@ -31795,6 +32195,7 @@
         {
           asic: aon_timer_tl_req
           verilator: aon_timer_tl_req
+          cw340: aon_timer_tl_req
         }
         width: 1
         type: req_rsp
@@ -31814,6 +32215,7 @@
         {
           asic: aon_timer_tl_rsp
           verilator: aon_timer_tl_rsp
+          cw340: aon_timer_tl_rsp
         }
         width: 1
         type: req_rsp
@@ -31833,6 +32235,7 @@
         {
           asic: lc_dft_en
           verilator: lc_dft_en
+          cw340: lc_dft_en
         }
         width: 1
         type: uni
@@ -31852,6 +32255,7 @@
         {
           asic: ""
           verilator: ""
+          cw340: ""
         }
         width: 1
         type: uni
@@ -31871,6 +32275,7 @@
         {
           asic: obs_ctrl
           verilator: obs_ctrl
+          cw340: obs_ctrl
         }
         width: 1
         type: uni
@@ -31890,6 +32295,7 @@
         {
           asic: otbn_imem_ram_cfg_req
           verilator: otbn_imem_ram_cfg_req
+          cw340: otbn_imem_ram_cfg_req
         }
         width: 1
         type: req_rsp
@@ -31909,6 +32315,7 @@
         {
           asic: otbn_imem_ram_cfg_rsp
           verilator: otbn_imem_ram_cfg_rsp
+          cw340: otbn_imem_ram_cfg_rsp
         }
         width: 1
         type: req_rsp
@@ -31928,6 +32335,7 @@
         {
           asic: otbn_dmem_ram_cfg_req
           verilator: otbn_dmem_ram_cfg_req
+          cw340: otbn_dmem_ram_cfg_req
         }
         width: 1
         type: req_rsp
@@ -31947,6 +32355,7 @@
         {
           asic: otbn_dmem_ram_cfg_rsp
           verilator: otbn_dmem_ram_cfg_rsp
+          cw340: otbn_dmem_ram_cfg_rsp
         }
         width: 1
         type: req_rsp
@@ -31966,6 +32375,7 @@
         {
           asic: i2c0_ram_cfg_req
           verilator: i2c0_ram_cfg_req
+          cw340: i2c0_ram_cfg_req
         }
         width: 1
         type: req_rsp
@@ -31985,6 +32395,7 @@
         {
           asic: i2c0_ram_cfg_rsp
           verilator: i2c0_ram_cfg_rsp
+          cw340: i2c0_ram_cfg_rsp
         }
         width: 1
         type: req_rsp
@@ -32004,6 +32415,7 @@
         {
           asic: rv_core_ibex_icache_tag_ram_cfg_req
           verilator: rv_core_ibex_icache_tag_ram_cfg_req
+          cw340: rv_core_ibex_icache_tag_ram_cfg_req
         }
         width:
         {
@@ -32033,6 +32445,7 @@
         {
           asic: rv_core_ibex_icache_tag_ram_cfg_rsp
           verilator: rv_core_ibex_icache_tag_ram_cfg_rsp
+          cw340: rv_core_ibex_icache_tag_ram_cfg_rsp
         }
         width:
         {
@@ -32062,6 +32475,7 @@
         {
           asic: rv_core_ibex_icache_data_ram_cfg_req
           verilator: rv_core_ibex_icache_data_ram_cfg_req
+          cw340: rv_core_ibex_icache_data_ram_cfg_req
         }
         width:
         {
@@ -32091,6 +32505,7 @@
         {
           asic: rv_core_ibex_icache_data_ram_cfg_rsp
           verilator: rv_core_ibex_icache_data_ram_cfg_rsp
+          cw340: rv_core_ibex_icache_data_ram_cfg_rsp
         }
         width:
         {
@@ -32120,6 +32535,7 @@
         {
           asic: spi_device_sys2spi_ram_cfg_req
           verilator: spi_device_sys2spi_ram_cfg_req
+          cw340: spi_device_sys2spi_ram_cfg_req
         }
         width: 1
         type: req_rsp
@@ -32139,6 +32555,7 @@
         {
           asic: spi_device_sys2spi_ram_cfg_rsp
           verilator: spi_device_sys2spi_ram_cfg_rsp
+          cw340: spi_device_sys2spi_ram_cfg_rsp
         }
         width: 1
         type: req_rsp
@@ -32158,6 +32575,7 @@
         {
           asic: spi_device_spi2sys_ram_cfg_req
           verilator: spi_device_spi2sys_ram_cfg_req
+          cw340: spi_device_spi2sys_ram_cfg_req
         }
         width: 1
         type: req_rsp
@@ -32177,6 +32595,7 @@
         {
           asic: spi_device_spi2sys_ram_cfg_rsp
           verilator: spi_device_spi2sys_ram_cfg_rsp
+          cw340: spi_device_spi2sys_ram_cfg_rsp
         }
         width: 1
         type: req_rsp
@@ -32196,6 +32615,7 @@
         {
           asic: rom_ctrl0_rom_cfg_req
           verilator: rom_ctrl0_rom_cfg_req
+          cw340: rom_ctrl0_rom_cfg_req
         }
         width: 1
         type: req_rsp
@@ -32215,6 +32635,7 @@
         {
           asic: rom_ctrl0_rom_cfg_rsp
           verilator: rom_ctrl0_rom_cfg_rsp
+          cw340: rom_ctrl0_rom_cfg_rsp
         }
         width: 1
         type: req_rsp
@@ -32234,6 +32655,7 @@
         {
           asic: rom_ctrl1_rom_cfg_req
           verilator: rom_ctrl1_rom_cfg_req
+          cw340: rom_ctrl1_rom_cfg_req
         }
         width: 1
         type: req_rsp
@@ -32253,6 +32675,7 @@
         {
           asic: rom_ctrl1_rom_cfg_rsp
           verilator: rom_ctrl1_rom_cfg_rsp
+          cw340: rom_ctrl1_rom_cfg_rsp
         }
         width: 1
         type: req_rsp
@@ -32272,6 +32695,7 @@
         {
           asic: sram_ctrl_main_ram_cfg_req
           verilator: sram_ctrl_main_ram_cfg_req
+          cw340: sram_ctrl_main_ram_cfg_req
         }
         width:
         {
@@ -32301,6 +32725,7 @@
         {
           asic: sram_ctrl_main_ram_cfg_rsp
           verilator: sram_ctrl_main_ram_cfg_rsp
+          cw340: sram_ctrl_main_ram_cfg_rsp
         }
         width:
         {
@@ -32330,6 +32755,7 @@
         {
           asic: sram_ctrl_ret_ram_cfg_req
           verilator: sram_ctrl_ret_ram_cfg_req
+          cw340: sram_ctrl_ret_ram_cfg_req
         }
         width:
         {
@@ -32359,6 +32785,7 @@
         {
           asic: sram_ctrl_ret_ram_cfg_rsp
           verilator: sram_ctrl_ret_ram_cfg_rsp
+          cw340: sram_ctrl_ret_ram_cfg_rsp
         }
         width:
         {
@@ -32388,6 +32815,7 @@
         {
           asic: sram_ctrl_mbox_ram_cfg_req
           verilator: sram_ctrl_mbox_ram_cfg_req
+          cw340: sram_ctrl_mbox_ram_cfg_req
         }
         width:
         {
@@ -32417,6 +32845,7 @@
         {
           asic: sram_ctrl_mbox_ram_cfg_rsp
           verilator: sram_ctrl_mbox_ram_cfg_rsp
+          cw340: sram_ctrl_mbox_ram_cfg_rsp
         }
         width:
         {
@@ -32446,6 +32875,7 @@
         {
           asic: pwrmgr_boot_status
           verilator: pwrmgr_boot_status
+          cw340: pwrmgr_boot_status
         }
         width: 1
         type: uni
@@ -32465,6 +32895,7 @@
         {
           asic: 1'b0
           verilator: 1'b0
+          cw340: 1'b0
         }
         width: 1
         type: uni
@@ -32484,6 +32915,7 @@
         {
           asic: clkmgr_clocks
           verilator: clkmgr_clocks
+          cw340: clkmgr_clocks
         }
         width: 1
         type: uni
@@ -32503,6 +32935,7 @@
         {
           asic: ""
           verilator: ""
+          cw340: ""
         }
         width: 1
         type: uni
@@ -32522,6 +32955,7 @@
         {
           asic: clk_main_jitter_en
           verilator: clk_main_jitter_en
+          cw340: clk_main_jitter_en
         }
         width: 1
         type: uni
@@ -32541,6 +32975,7 @@
         {
           asic: ""
           verilator: ""
+          cw340: ""
         }
         width: 1
         type: req_rsp
@@ -32560,6 +32995,7 @@
         {
           asic: dma_pkg::SYS_RSP_DEFAULT
           verilator: dma_pkg::SYS_RSP_DEFAULT
+          cw340: dma_pkg::SYS_RSP_DEFAULT
         }
         width: 1
         type: req_rsp
@@ -32579,6 +33015,7 @@
         {
           asic: es_rng_enable
           verilator: es_rng_enable
+          cw340: es_rng_enable
         }
         width: 1
         type: uni
@@ -32598,6 +33035,7 @@
         {
           asic: es_rng_valid
           verilator: es_rng_valid
+          cw340: es_rng_valid
         }
         width: 1
         type: uni
@@ -32617,6 +33055,7 @@
         {
           asic: es_rng_bit
           verilator: es_rng_bit
+          cw340: es_rng_bit
         }
         width:
         {
@@ -32651,6 +33090,7 @@
         {
           asic: es_rng_fips
           verilator: es_rng_fips
+          cw340: es_rng_fips
         }
         width: 1
         type: uni
@@ -32670,6 +33110,7 @@
         {
           asic: tlul_pkg::TL_H2D_DEFAULT
           verilator: tlul_pkg::TL_H2D_DEFAULT
+          cw340: tlul_pkg::TL_H2D_DEFAULT
         }
         width: 1
         type: req_rsp
@@ -32689,6 +33130,7 @@
         {
           asic: ""
           verilator: ""
+          cw340: ""
         }
         width: 1
         type: req_rsp
@@ -32708,6 +33150,7 @@
         {
           asic: ""
           verilator: ""
+          cw340: ""
         }
         width: 1
         type: uni
@@ -32727,6 +33170,7 @@
         {
           asic: ""
           verilator: ""
+          cw340: ""
         }
         width: 1
         type: uni
@@ -32746,6 +33190,7 @@
         {
           asic: ""
           verilator: ""
+          cw340: ""
         }
         width: 1
         type: uni
@@ -32765,6 +33210,7 @@
         {
           asic: ""
           verilator: ""
+          cw340: ""
         }
         width: 1
         type: uni
@@ -32784,6 +33230,7 @@
         {
           asic: ""
           verilator: ""
+          cw340: ""
         }
         width: 1
         type: uni
@@ -32803,6 +33250,7 @@
         {
           asic: ""
           verilator: ""
+          cw340: ""
         }
         width: 1
         type: uni
@@ -32822,6 +33270,7 @@
         {
           asic: ""
           verilator: ""
+          cw340: ""
         }
         width: 1
         type: uni
@@ -32841,6 +33290,7 @@
         {
           asic: ""
           verilator: ""
+          cw340: ""
         }
         width: 1
         type: uni
@@ -32860,6 +33310,7 @@
         {
           asic: ""
           verilator: ""
+          cw340: ""
         }
         width: 1
         type: uni
@@ -32879,6 +33330,7 @@
         {
           asic: ""
           verilator: ""
+          cw340: ""
         }
         width: 1
         type: uni
@@ -32898,6 +33350,7 @@
         {
           asic: ""
           verilator: ""
+          cw340: ""
         }
         width: 1
         type: uni
@@ -32917,6 +33370,7 @@
         {
           asic: ""
           verilator: ""
+          cw340: ""
         }
         width: 1
         type: uni
@@ -32936,6 +33390,7 @@
         {
           asic: ""
           verilator: ""
+          cw340: ""
         }
         width: 1
         type: uni
@@ -32955,6 +33410,7 @@
         {
           asic: ""
           verilator: ""
+          cw340: ""
         }
         width: 1
         type: uni
@@ -32974,6 +33430,7 @@
         {
           asic: ""
           verilator: ""
+          cw340: ""
         }
         width: 1
         type: uni
@@ -32993,6 +33450,7 @@
         {
           asic: ""
           verilator: ""
+          cw340: ""
         }
         width: 1
         type: uni
@@ -33012,6 +33470,7 @@
         {
           asic: ""
           verilator: ""
+          cw340: ""
         }
         width: 1
         type: uni
@@ -33031,6 +33490,7 @@
         {
           asic: ""
           verilator: ""
+          cw340: ""
         }
         width: 1
         type: uni
@@ -33050,6 +33510,7 @@
         {
           asic: ""
           verilator: ""
+          cw340: ""
         }
         width: 1
         type: uni
@@ -33069,6 +33530,7 @@
         {
           asic: ""
           verilator: ""
+          cw340: ""
         }
         width: 1
         type: uni
@@ -33088,6 +33550,7 @@
         {
           asic: ""
           verilator: ""
+          cw340: ""
         }
         width: 1
         type: uni
@@ -33107,6 +33570,7 @@
         {
           asic: ""
           verilator: ""
+          cw340: ""
         }
         width: 1
         type: uni
@@ -33126,6 +33590,7 @@
         {
           asic: ""
           verilator: ""
+          cw340: ""
         }
         width: 1
         type: uni
@@ -33145,6 +33610,7 @@
         {
           asic: ""
           verilator: ""
+          cw340: ""
         }
         width: 1
         type: uni
@@ -33164,6 +33630,7 @@
         {
           asic: ""
           verilator: ""
+          cw340: ""
         }
         width: 1
         type: uni
@@ -33183,6 +33650,7 @@
         {
           asic: ""
           verilator: ""
+          cw340: ""
         }
         width: 1
         type: uni
@@ -33202,6 +33670,7 @@
         {
           asic: ""
           verilator: ""
+          cw340: ""
         }
         width: 1
         type: uni
@@ -33221,6 +33690,7 @@
         {
           asic: ""
           verilator: ""
+          cw340: ""
         }
         width: 1
         type: uni
@@ -33240,6 +33710,7 @@
         {
           asic: ""
           verilator: ""
+          cw340: ""
         }
         width: 1
         type: uni
@@ -33259,6 +33730,7 @@
         {
           asic: ""
           verilator: ""
+          cw340: ""
         }
         width: 1
         type: uni
@@ -33278,6 +33750,7 @@
         {
           asic: ""
           verilator: ""
+          cw340: ""
         }
         width: 1
         type: uni
@@ -33297,6 +33770,7 @@
         {
           asic: ""
           verilator: ""
+          cw340: ""
         }
         width: 1
         type: uni
@@ -33316,6 +33790,7 @@
         {
           asic: ""
           verilator: ""
+          cw340: ""
         }
         width: 1
         type: uni
@@ -33335,6 +33810,7 @@
         {
           asic: ""
           verilator: ""
+          cw340: ""
         }
         width: 1
         type: uni
@@ -33354,6 +33830,7 @@
         {
           asic: ""
           verilator: ""
+          cw340: ""
         }
         width: 1
         type: uni
@@ -33373,6 +33850,7 @@
         {
           asic: ""
           verilator: ""
+          cw340: ""
         }
         width: 1
         type: uni
@@ -33392,6 +33870,7 @@
         {
           asic: ""
           verilator: ""
+          cw340: ""
         }
         width: 1
         type: uni
@@ -33411,6 +33890,7 @@
         {
           asic: ""
           verilator: ""
+          cw340: ""
         }
         width: 1
         type: uni
@@ -33430,6 +33910,7 @@
         {
           asic: ""
           verilator: ""
+          cw340: ""
         }
         width: 1
         type: uni
@@ -33449,6 +33930,7 @@
         {
           asic: ""
           verilator: ""
+          cw340: ""
         }
         width: 1
         type: uni
@@ -33468,6 +33950,7 @@
         {
           asic: dmi_req
           verilator: dmi_req
+          cw340: dmi_req
         }
         width: 1
         type: req_rsp
@@ -33487,6 +33970,7 @@
         {
           asic: dmi_rsp
           verilator: dmi_rsp
+          cw340: dmi_rsp
         }
         width: 1
         type: req_rsp
@@ -33506,6 +33990,7 @@
         {
           asic: "'0"
           verilator: "'0"
+          cw340: "'0"
         }
         width: 1
         type: uni
@@ -33525,6 +34010,7 @@
         {
           asic: ast_tl_req
           verilator: ast_tl_req
+          cw340: ast_tl_req
         }
         width: 1
         type: req_rsp
@@ -33544,6 +34030,7 @@
         {
           asic: ast_tl_rsp
           verilator: ast_tl_rsp
+          cw340: ast_tl_rsp
         }
         width: 1
         type: req_rsp
@@ -33563,6 +34050,7 @@
         {
           asic: pwrmgr_ast_req
           verilator: pwrmgr_ast_req
+          cw340: pwrmgr_ast_req
         }
         width: 1
         type: req_rsp
@@ -33582,6 +34070,7 @@
         {
           asic: pwrmgr_ast_rsp
           verilator: pwrmgr_ast_rsp
+          cw340: pwrmgr_ast_rsp
         }
         width: 1
         type: req_rsp
@@ -33601,6 +34090,7 @@
         {
           asic: otp_macro_pwr_seq
           verilator: otp_macro_pwr_seq
+          cw340: otp_macro_pwr_seq
         }
         width: 1
         type: uni
@@ -33620,6 +34110,7 @@
         {
           asic: otp_macro_pwr_seq_h
           verilator: otp_macro_pwr_seq_h
+          cw340: otp_macro_pwr_seq_h
         }
         width: 1
         type: uni
@@ -33639,6 +34130,7 @@
         {
           asic: OTP_EXT_VOLT
           verilator: ""
+          cw340: "'0"
         }
         width: 1
         type: io
@@ -33658,6 +34150,7 @@
         {
           asic: otp_obs
           verilator: otp_obs
+          cw340: otp_obs
         }
         width: 8
         type: uni
@@ -33677,6 +34170,7 @@
         {
           asic: otp_cfg
           verilator: otp_cfg
+          cw340: otp_cfg
         }
         width: 1
         type: uni
@@ -33696,6 +34190,7 @@
         {
           asic: por_n
           verilator: por_n
+          cw340: por_n
         }
         width: 2
         type: uni
@@ -33715,6 +34210,7 @@
         {
           asic: rstmgr_resets
           verilator: rstmgr_resets
+          cw340: rstmgr_resets
         }
         width: 1
         type: uni
@@ -33734,6 +34230,7 @@
         {
           asic: ""
           verilator: ""
+          cw340: ""
         }
         width: 1
         type: uni
@@ -33753,6 +34250,7 @@
         {
           asic: "'0"
           verilator: "'0"
+          cw340: fpga_info
         }
         width: 32
         type: uni
@@ -33772,6 +34270,7 @@
         {
           asic: ctn_misc_tl_h2d_i
           verilator: ctn_misc_tl_h2d_i
+          cw340: ctn_misc_tl_h2d_i
         }
         width: 1
         type: uni
@@ -33791,6 +34290,7 @@
         {
           asic: ctn_misc_tl_d2h_o
           verilator: ctn_misc_tl_d2h_o
+          cw340: ctn_misc_tl_d2h_o
         }
         width: 1
         type: uni
@@ -33810,6 +34310,7 @@
         {
           asic: 1'b0
           verilator: 1'b0
+          cw340: 1'b0
         }
         width: 1
         type: uni
@@ -33829,6 +34330,7 @@
         {
           asic: soc_rst_req_async
           verilator: soc_rst_req_async
+          cw340: soc_rst_req_async
         }
         width: 1
         type: uni
@@ -33848,6 +34350,7 @@
         {
           asic: "'0"
           verilator: "'0"
+          cw340: "'0"
         }
         width: 8
         type: uni
@@ -33867,6 +34370,7 @@
         {
           asic: ""
           verilator: ""
+          cw340: ""
         }
         width: 16
         type: uni
@@ -33886,6 +34390,7 @@
         {
           asic: "'0"
           verilator: "'0"
+          cw340: "'0"
         }
         width: 16
         type: uni
@@ -33905,6 +34410,7 @@
         {
           asic: "'0"
           verilator: "'0"
+          cw340: "'0"
         }
         width: 4
         type: uni
@@ -33924,6 +34430,7 @@
         {
           asic: sck_monitor
           verilator: sck_monitor
+          cw340: sck_monitor
         }
         width: 1
         type: uni
@@ -33943,6 +34450,7 @@
         {
           asic: ""
           verilator: ""
+          cw340: ""
         }
         width: 1
         type: uni
@@ -33962,6 +34470,7 @@
         {
           asic: 1'b0
           verilator: 1'b0
+          cw340: 1'b0
         }
         width: 1
         type: uni
@@ -33981,6 +34490,7 @@
         {
           asic: ""
           verilator: ""
+          cw340: ""
         }
         width: 1
         type: uni
@@ -34000,6 +34510,7 @@
         {
           asic: ext_racl_error
           verilator: ext_racl_error
+          cw340: ext_racl_error
         }
         width:
         {
@@ -34029,6 +34540,7 @@
         {
           asic: ac_range_check_overwrite_i
           verilator: ac_range_check_overwrite_i
+          cw340: ac_range_check_overwrite_i
         }
         width: 1
         type: uni
@@ -34048,6 +34560,7 @@
         {
           asic: ctn_tl_h2d[0]
           verilator: ctn_tl_h2d[0]
+          cw340: ctn_tl_h2d[0]
         }
         width: 1
         type: uni
@@ -34067,6 +34580,7 @@
         {
           asic: ctn_tl_d2h[0]
           verilator: ctn_tl_d2h[0]
+          cw340: ctn_tl_d2h[0]
         }
         width: 1
         type: uni
@@ -34086,6 +34600,7 @@
         {
           asic: cio_soc_proxy_soc_gpi_p2d
           verilator: cio_soc_proxy_soc_gpi_p2d
+          cw340: cio_soc_proxy_soc_gpi_p2d
         }
         width: 16
         type: uni
@@ -34105,6 +34620,7 @@
         {
           asic: cio_soc_proxy_soc_gpi_p2d
           verilator: cio_soc_proxy_soc_gpi_p2d
+          cw340: cio_soc_proxy_soc_gpi_p2d
         }
         width: 16
         type: uni
@@ -34124,6 +34640,7 @@
         {
           asic: cio_soc_proxy_soc_gpo_d2p
           verilator: cio_soc_proxy_soc_gpo_d2p
+          cw340: cio_soc_proxy_soc_gpo_d2p
         }
         width: 16
         type: uni
@@ -34143,6 +34660,7 @@
         {
           asic: cio_soc_proxy_soc_gpo_d2p
           verilator: cio_soc_proxy_soc_gpo_d2p
+          cw340: cio_soc_proxy_soc_gpo_d2p
         }
         width: 16
         type: uni
@@ -34162,6 +34680,7 @@
         {
           asic: cio_soc_proxy_soc_gpo_en_d2p
           verilator: cio_soc_proxy_soc_gpo_en_d2p
+          cw340: cio_soc_proxy_soc_gpo_en_d2p
         }
         width: 16
         type: uni
@@ -34181,6 +34700,7 @@
         {
           asic: cio_soc_proxy_soc_gpo_en_d2p
           verilator: cio_soc_proxy_soc_gpo_en_d2p
+          cw340: cio_soc_proxy_soc_gpo_en_d2p
         }
         width: 16
         type: uni

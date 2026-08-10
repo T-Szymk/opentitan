@@ -1997,5 +1997,113 @@
         special_signals: [],
       }
     },
+    { name: 'cw340',
+
+      // Standalone chip-level bring-up on the ChipWhisperer CW340 board
+      // (Kintex UltraScale KU095). No real SoC sits on the other side of
+      // soc_proxy/dma/mbx*/ac_range_check/racl_ctrl/soc_dbg_ctrl yet, so
+      // this target ties those off exactly like the 'asic' target does.
+      // The only deltas from 'asic' are:
+      //  - 'rv_core_ibex.fpga_info' is NOT overridden here (left to the
+      //    default chiplevel wiring), so it picks up the real fpga_info
+      //    signal driven by usr_access_xil7series (see chiplevel.sv.tpl).
+      //  - 'otp_macro.ext_voltage_h' has no analog pad on this target
+      //    (OTP_EXT_VOLT is removed below, mirroring how earlgrey's cw340
+      //    target removes its own analog/test-voltage pads), so it is
+      //    unused instead of wired to a pad.
+      chiplevel: {
+        port_overrides: {
+          'rv_dm.next_dm_addr'                   : { unused:      true             },
+          'soc_proxy.integrator_id'              : { unused:      true             },
+          'soc_proxy.soc_lsio_trigger'           : { unused:      true             },
+          'soc_proxy.soc_gpi_async'              : { unused:      true             },
+          'soc_proxy.soc_gpo_async'              : { unused:      true             },
+          'soc_proxy.soc_wkup_async'             : { unused:      true             },
+          'soc_proxy.misc_tl_h2d'                : { feedthrough: true             },
+          'soc_proxy.misc_tl_d2h'                : { feedthrough: true             },
+          'ac_range_check.range_check_overwrite' : { feedthrough: true             },
+          'ac_range_check.ctn_filtered_tl_h2d'   : { signal:      "ctn_tl_h2d[0]"  },
+          'ac_range_check.ctn_filtered_tl_d2h'   : { signal:      "ctn_tl_d2h[0]"  },
+          'racl_ctrl.racl_policies'              : { unused:      true             },
+          'racl_ctrl.racl_error_external'        : { signal:      "ext_racl_error" },
+          'clkmgr.cg_en'                         : { unused:      true             },
+          'rstmgr.rst_en'                        : { unused:      true             },
+          'pwrmgr.ext_rst_ack'                   : { unused:      true             },
+          'pwrmgr.boot_status'                   : { signal:     'pwrmgr_boot_status' },
+          'soc_dbg_ctrl.halt_cpu_boot'           : { unused:      true             },
+          'soc_dbg_ctrl.soc_dbg_policy_bus'      : { unused:      true             },
+          'ast.lc_hw_debug_en'                   : { unused:      true             },
+          'ast.lc_dft_en'                        : { signal:      'lc_dft_en'      },
+          'dma.sys'                              : { unused:      true             },
+          'mbx.tl_mbx'                           : { unused:      true             },
+          'dbg.tl_dbg'                           : { signal:      'dmi'            },
+          'otp_macro.ext_voltage_h'              : { unused:      true             },
+          # Mailboxes
+          'mbx0.doe_intr'                   : { unused: true },
+          'mbx0.doe_intr_en'                : { unused: true },
+          'mbx0.doe_intr_support'           : { unused: true },
+          'mbx0.doe_async_msg_support'      : { unused: true },
+          'mbx1.doe_intr'                   : { unused: true },
+          'mbx1.doe_intr_en'                : { unused: true },
+          'mbx1.doe_intr_support'           : { unused: true },
+          'mbx1.doe_async_msg_support'      : { unused: true },
+          'mbx2.doe_intr'                   : { unused: true },
+          'mbx2.doe_intr_en'                : { unused: true },
+          'mbx2.doe_intr_support'           : { unused: true },
+          'mbx2.doe_async_msg_support'      : { unused: true },
+          'mbx3.doe_intr'                   : { unused: true },
+          'mbx3.doe_intr_en'                : { unused: true },
+          'mbx3.doe_intr_support'           : { unused: true },
+          'mbx3.doe_async_msg_support'      : { unused: true },
+          'mbx4.doe_intr'                   : { unused: true },
+          'mbx4.doe_intr_en'                : { unused: true },
+          'mbx4.doe_intr_support'           : { unused: true },
+          'mbx4.doe_async_msg_support'      : { unused: true },
+          'mbx5.doe_intr'                   : { unused: true },
+          'mbx5.doe_intr_en'                : { unused: true },
+          'mbx5.doe_intr_support'           : { unused: true },
+          'mbx5.doe_async_msg_support'      : { unused: true },
+          'mbx6.doe_intr'                   : { unused: true },
+          'mbx6.doe_intr_en'                : { unused: true },
+          'mbx6.doe_intr_support'           : { unused: true },
+          'mbx6.doe_async_msg_support'      : { unused: true },
+          'mbx_jtag.doe_intr'               : { unused: true },
+          'mbx_jtag.doe_intr_en'            : { unused: true },
+          'mbx_jtag.doe_intr_support'       : { unused: true },
+          'mbx_jtag.doe_async_msg_support'  : { unused: true },
+          'mbx_pcie0.doe_intr'              : { unused: true },
+          'mbx_pcie0.doe_intr_en'           : { unused: true },
+          'mbx_pcie0.doe_intr_support'      : { unused: true },
+          'mbx_pcie0.doe_async_msg_support' : { unused: true },
+          'mbx_pcie1.doe_intr'              : { unused: true },
+          'mbx_pcie1.doe_intr_en'           : { unused: true },
+          'mbx_pcie1.doe_intr_support'      : { unused: true },
+          'mbx_pcie1.doe_async_msg_support' : { unused: true },
+        }
+      },
+
+      // Pinout changes: no analog/test-voltage pad exists on the FPGA, and
+      // three manual infrastructure pads are added: the FPGA reference clock
+      // input, plus the ChipWhisperer SCA clock-out/trigger pair (unused for
+      // a first bring-up, but cheap to reserve now for later SCA/FI work).
+      // Darjeeling has no usbdev IP, so (unlike earlgrey's cw340 target)
+      // there are no USB pads to add or remove here.
+      pinout: {
+        remove_ports: [],
+        remove_pads: ['OTP_EXT_VOLT'],
+        add_pads: [
+          { name: 'IO_CLK',     type: 'InputStd', bank: 'VIO', connection: 'manual', desc: 'FPGA reference clock input, drives clkgen_xil_ultrascale.'},
+          { name: 'IO_CLKOUT',  type: 'BidirStd', bank: 'VIO', connection: 'manual', desc: 'ChipWhisperer SCA clock output (reserved, unused for v1 bring-up).'},
+          { name: 'IO_TRIGGER', type: 'BidirStd', bank: 'VIO', connection: 'manual', desc: 'ChipWhisperer SCA trigger output (reserved, unused for v1 bring-up).'},
+        ],
+      },
+
+      // Darjeeling's JTAG signals are dedicated manual pads (JTAG_TCK etc.,
+      // see the base pinout above), not pinmux-muxed strap positions like
+      // earlgrey's IOR0-IOR5/IOC5/IOC8. There are no straps to place here.
+      pinmux: {
+        special_signals: [],
+      }
+    },
   ]
 }

@@ -53,6 +53,18 @@ for pad in target["pinout"]["add_pads"]:
 module chip_${top["name"]}_${target["name"]} #(
   parameter bit SecRomCtrl0DisableScrambling = 1'b0,
   parameter bit SecRomCtrl1DisableScrambling = 1'b0
+% if target["name"] == "cw340":
+  ,
+  // Path to a VMEM file containing the contents of rom_ctrl0's boot ROM,
+  // which will be baked into the FPGA bitstream.
+  parameter RomCtrl0BootRomInitFile = "rom_ctrl0_fpga_${target["name"]}.32.vmem",
+  // Path to a VMEM file containing the contents of rom_ctrl1's boot ROM,
+  // which will be baked into the FPGA bitstream.
+  parameter RomCtrl1BootRomInitFile = "rom_ctrl1_fpga_${target["name"]}.32.vmem",
+  // Path to a VMEM file containing the contents of the emulated OTP, which
+  // will be baked into the FPGA bitstream.
+  parameter OtpMacroMemInitFile = "otp_img_fpga_${target["name"]}.vmem"
+% endif
 ) (
 % if target["name"] == "verilator":
   // Clock and Reset
@@ -547,6 +559,43 @@ module chip_${top["name"]}_${target["name"]} #(
   assign vcc_supp = cnt < 4'h4 ? 1'b0 :
                     cnt < 4'h8 ? 1'b1 :
                     cnt < 4'hc ? 1'b0 : 1'b1;
+% elif target["name"] == "cw340":
+
+  // Clock generation for the ChipWhisperer CW340 (Kintex UltraScale KU095).
+  // AST's own PLL is not synthesizable on an FPGA, so clkgen_xil_ultrascale
+  // instantiates a Xilinx MMCME2_ADV hard macro instead and feeds AST's
+  // clk_osc_byp_i oscillator-bypass input (present unconditionally in
+  // ast.sv/io_clk.sv/aon_clk.sv/sys_clk.sv, active only when synthesized
+  // with -verilog_define AST_BYPASS_CLK).
+  logic clk_main, clk_io, clk_usb_48mhz, clk_aon, rst_n;
+  clkgen_xil_ultrascale #(
+    .AddClkBuf(0)
+  ) u_clkgen (
+    .clk_i(manual_in_io_clk),
+    .rst_ni(manual_in_por_n),
+    .clk_main_o(clk_main),
+    .clk_io_o(clk_io),
+    .clk_48MHz_o(clk_usb_48mhz),
+    .clk_aon_o(clk_aon),
+    .rst_no(rst_n)
+  );
+
+  logic [31:0] fpga_info;
+  usr_access_xil7series u_info (
+    .info_o(fpga_info)
+  );
+
+  ast_pkg::clks_osc_byp_t clks_osc_byp;
+  assign clks_osc_byp = '{
+    sys: clk_main,
+    io:  clk_io,
+    aon: clk_aon
+  };
+
+  // Darjeeling's AST has no dedicated USB clock domain (no usbdev IP), so
+  // clk_usb_48mhz has no consumer today.
+  logic unused_clk_usb_48mhz;
+  assign unused_clk_usb_48mhz = clk_usb_48mhz;
 % endif
 
   ast #(
@@ -556,6 +605,8 @@ module chip_${top["name"]}_${target["name"]} #(
     // external POR
 % if target["name"] == "verilator":
     .por_ni                ( rst_ni ),
+% elif target["name"] == "cw340":
+    .por_ni                ( rst_n ),
 % else:
     .por_ni                ( manual_in_por_n ),
 % endif
@@ -568,8 +619,8 @@ module chip_${top["name"]}_${target["name"]} #(
     .sns_clks_i            ( clkmgr_clocks ),
     .sns_rsts_i            ( rstmgr_resets ),
     .sns_spi_ext_clk_i     ( sck_monitor   ),
-% if target["name"] == "verilator":
-    // clocks' oscillator bypass for verilator
+% if target["name"] in ["verilator", "cw340"]:
+    // clocks' oscillator bypass for ${target["name"]}
     .clk_osc_byp_i         ( clks_osc_byp ),
 % endif
     // tlul
@@ -653,7 +704,7 @@ module chip_${top["name"]}_${target["name"]} #(
   jtag_pkg::jtag_req_t jtag_req;
   jtag_pkg::jtag_rsp_t jtag_rsp;
 
-% if target["name"] == "asic":
+% if target["name"] in ["asic", "cw340"]:
   assign jtag_req.tck    = manual_in_jtag_tck;
   assign jtag_req.tms    = manual_in_jtag_tms;
   assign jtag_req.trst_n = manual_in_jtag_trst_n;
@@ -860,25 +911,45 @@ module chip_${top["name"]}_${target["name"]} #(
     .alert_o()
   );
 
-% if target["name"] == "asic":
+% if target["name"] in ["asic", "cw340"]:
   //////////////////////////////////
   // Manual Pad / Signal Tie-offs //
   //////////////////////////////////
 
   assign manual_out_por_n = 1'b0;
   assign manual_oe_por_n = 1'b0;
+  assign manual_attr_por_n = '0;
 
+%   if target["name"] == "asic":
   assign manual_out_otp_ext_volt = 1'b0;
   assign manual_oe_otp_ext_volt = 1'b0;
 
-  // These pad attributes currently tied off permanently (these are all input-only pads).
-  assign manual_attr_por_n = '0;
+  // This pad attribute currently tied off permanently (this is an input-only pad).
   assign manual_attr_otp_ext_volt = '0;
 
   logic unused_manual_sigs;
   assign unused_manual_sigs = ^{
     manual_in_otp_ext_volt
   };
+%   endif
+
+%   if target["name"] == "cw340":
+  // IO_CLK is consumed directly by u_clkgen above; only its unused
+  // out/oe/attr sides need tying off here.
+  assign manual_out_io_clk = 1'b0;
+  assign manual_oe_io_clk = 1'b0;
+  assign manual_attr_io_clk = '0;
+
+  // Reserved for later ChipWhisperer SCA/FI use (see the 'cw340' target in
+  // hw/top_darjeeling/data/top_darjeeling.hjson); left as unused, undriven
+  // bidirectional pads for v1 bring-up.
+  assign manual_out_io_clkout = 1'b0;
+  assign manual_oe_io_clkout = 1'b0;
+  assign manual_attr_io_clkout = '0;
+  assign manual_out_io_trigger = 1'b0;
+  assign manual_oe_io_trigger = 1'b0;
+  assign manual_attr_io_trigger = '0;
+%   endif
 % endif
 
   // The power manager waits until the external reset request is removed by the SoC before
@@ -899,6 +970,16 @@ module chip_${top["name"]}_${target["name"]} #(
     .SecRomCtrl0DisableScrambling(SecRomCtrl0DisableScrambling),
     .SecRomCtrl1DisableScrambling(SecRomCtrl1DisableScrambling),
     .PinmuxTargetCfg(PinmuxTargetCfg)
+% if target["name"] == "cw340":
+    ,
+    // TODO(fpga-bringup): tune FPGA resource/masking parameters (AES/KMAC/
+    // OTBN regfile, Ibex config, etc., see hw/top_earlgrey/templates/chiplevel.sv.tpl's
+    // cw340 section for earlgrey's equivalents) once initial bring-up and
+    // timing closure on the KU095 is complete. Left at RTL defaults for v1.
+    .OtpMacroMemInitFile(OtpMacroMemInitFile),
+    .RomCtrl0BootRomInitFile(RomCtrl0BootRomInitFile),
+    .RomCtrl1BootRomInitFile(RomCtrl1BootRomInitFile)
+% endif
   ) top_${top["name"]} (
 <%include file="/chiplevel_snippets/special_signals_portmap.tpl" args="top=top, feature_info=feature_info, cio_info=cio_info, gen_bkdr_loader=gen_bkdr_loader" />\
 <%include file="/chiplevel_snippets/intermodule_portmap.tpl" args="top=top, target=target, domain='', inter_pd=False, feedthrough=False, last_snippet=True" />\

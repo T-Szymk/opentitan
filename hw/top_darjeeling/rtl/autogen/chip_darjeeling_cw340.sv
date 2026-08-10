@@ -9,9 +9,19 @@
 //                -o hw/top_darjeeling/
 
 
-module chip_darjeeling_asic #(
+module chip_darjeeling_cw340 #(
   parameter bit SecRomCtrl0DisableScrambling = 1'b0,
   parameter bit SecRomCtrl1DisableScrambling = 1'b0
+  ,
+  // Path to a VMEM file containing the contents of rom_ctrl0's boot ROM,
+  // which will be baked into the FPGA bitstream.
+  parameter RomCtrl0BootRomInitFile = "rom_ctrl0_fpga_cw340.32.vmem",
+  // Path to a VMEM file containing the contents of rom_ctrl1's boot ROM,
+  // which will be baked into the FPGA bitstream.
+  parameter RomCtrl1BootRomInitFile = "rom_ctrl1_fpga_cw340.32.vmem",
+  // Path to a VMEM file containing the contents of the emulated OTP, which
+  // will be baked into the FPGA bitstream.
+  parameter OtpMacroMemInitFile = "otp_img_fpga_cw340.vmem"
 ) (
   // Dedicated Pads
   inout POR_N, // Manual Pad
@@ -20,7 +30,6 @@ module chip_darjeeling_asic #(
   inout JTAG_TDI, // Manual Pad
   inout JTAG_TDO, // Manual Pad
   inout JTAG_TRST_N, // Manual Pad
-  inout OTP_EXT_VOLT, // Manual Pad
   inout SPI_HOST_D0, // Dedicated Pad for spi_host0_sd
   inout SPI_HOST_D1, // Dedicated Pad for spi_host0_sd
   inout SPI_HOST_D2, // Dedicated Pad for spi_host0_sd
@@ -94,6 +103,9 @@ module chip_darjeeling_asic #(
   inout SOC_GPO9, // Dedicated Pad for soc_proxy_soc_gpo
   inout SOC_GPO10, // Dedicated Pad for soc_proxy_soc_gpo
   inout SOC_GPO11, // Dedicated Pad for soc_proxy_soc_gpo
+  inout IO_CLK, // Manual Pad
+  inout IO_CLKOUT, // Manual Pad
+  inout IO_TRIGGER, // Manual Pad
 
   // Muxed Pads
   inout MIO0, // MIO Pad 0
@@ -312,31 +324,6 @@ module chip_darjeeling_asic #(
   logic [pinmux_reg_pkg::NDioPads-1:0] dio_oe;
   logic [pinmux_reg_pkg::NDioPads-1:0] dio_in;
 
-  logic [pinmux_reg_pkg::NMioPads-1:0] mio_in_raw;
-  logic                         [79:0] dio_in_raw;
-
-  logic unused_mio_in_raw;
-  logic unused_dio_in_raw;
-  assign unused_mio_in_raw = ^mio_in_raw;
-  assign unused_dio_in_raw = ^dio_in_raw;
-
-  // Manual pads
-  logic manual_in_por_n, manual_out_por_n, manual_oe_por_n;
-  logic manual_in_jtag_tck, manual_out_jtag_tck, manual_oe_jtag_tck;
-  logic manual_in_jtag_tms, manual_out_jtag_tms, manual_oe_jtag_tms;
-  logic manual_in_jtag_tdi, manual_out_jtag_tdi, manual_oe_jtag_tdi;
-  logic manual_in_jtag_tdo, manual_out_jtag_tdo, manual_oe_jtag_tdo;
-  logic manual_in_jtag_trst_n, manual_out_jtag_trst_n, manual_oe_jtag_trst_n;
-  logic manual_in_otp_ext_volt, manual_out_otp_ext_volt, manual_oe_otp_ext_volt;
-
-  pad_attr_t manual_attr_por_n;
-  pad_attr_t manual_attr_jtag_tck;
-  pad_attr_t manual_attr_jtag_tms;
-  pad_attr_t manual_attr_jtag_tdi;
-  pad_attr_t manual_attr_jtag_tdo;
-  pad_attr_t manual_attr_jtag_trst_n;
-  pad_attr_t manual_attr_otp_ext_volt;
-
 
   //////////////////////
   // Padring Instance //
@@ -349,11 +336,14 @@ module chip_darjeeling_asic #(
   padring #(
     // Padring specific counts may differ from pinmux config due
     // to custom, stubbed or added pads.
-    .NDioPads(80),
+    .NDioPads(82),
     .NMioPads(12),
     .PhysicalPads(1),
     .NIoBanks(int'(IoBankCount)),
     .DioScanRole ({
+      scan_role_pkg::DioPadIoTriggerScanRole,
+      scan_role_pkg::DioPadIoClkoutScanRole,
+      scan_role_pkg::DioPadIoClkScanRole,
       scan_role_pkg::DioPadSocGpo11ScanRole,
       scan_role_pkg::DioPadSocGpo10ScanRole,
       scan_role_pkg::DioPadSocGpo9ScanRole,
@@ -427,7 +417,6 @@ module chip_darjeeling_asic #(
       scan_role_pkg::DioPadSpiHostD2ScanRole,
       scan_role_pkg::DioPadSpiHostD1ScanRole,
       scan_role_pkg::DioPadSpiHostD0ScanRole,
-      scan_role_pkg::DioPadOtpExtVoltScanRole,
       scan_role_pkg::DioPadJtagTrstNScanRole,
       scan_role_pkg::DioPadJtagTdoScanRole,
       scan_role_pkg::DioPadJtagTdiScanRole,
@@ -450,6 +439,9 @@ module chip_darjeeling_asic #(
       scan_role_pkg::MioPadMio0ScanRole
     }),
     .DioPadOrient ({
+      pad_orient_pkg::DioPadIoTriggerPadOrient,
+      pad_orient_pkg::DioPadIoClkoutPadOrient,
+      pad_orient_pkg::DioPadIoClkPadOrient,
       pad_orient_pkg::DioPadSocGpo11PadOrient,
       pad_orient_pkg::DioPadSocGpo10PadOrient,
       pad_orient_pkg::DioPadSocGpo9PadOrient,
@@ -523,7 +515,6 @@ module chip_darjeeling_asic #(
       pad_orient_pkg::DioPadSpiHostD2PadOrient,
       pad_orient_pkg::DioPadSpiHostD1PadOrient,
       pad_orient_pkg::DioPadSpiHostD0PadOrient,
-      pad_orient_pkg::DioPadOtpExtVoltPadOrient,
       pad_orient_pkg::DioPadJtagTrstNPadOrient,
       pad_orient_pkg::DioPadJtagTdoPadOrient,
       pad_orient_pkg::DioPadJtagTdiPadOrient,
@@ -546,6 +537,9 @@ module chip_darjeeling_asic #(
       pad_orient_pkg::MioPadMio0PadOrient
     }),
     .DioPadBank ({
+      IoBankVio, // IO_TRIGGER
+      IoBankVio, // IO_CLKOUT
+      IoBankVio, // IO_CLK
       IoBankVio, // SOC_GPO11
       IoBankVio, // SOC_GPO10
       IoBankVio, // SOC_GPO9
@@ -619,7 +613,6 @@ module chip_darjeeling_asic #(
       IoBankVio, // SPI_HOST_D2
       IoBankVio, // SPI_HOST_D1
       IoBankVio, // SPI_HOST_D0
-      IoBankVio, // OTP_EXT_VOLT
       IoBankVio, // JTAG_TRST_N
       IoBankVio, // JTAG_TDO
       IoBankVio, // JTAG_TDI
@@ -642,6 +635,9 @@ module chip_darjeeling_asic #(
       IoBankVio  // MIO0
     }),
     .DioPadType ({
+      BidirStd, // IO_TRIGGER
+      BidirStd, // IO_CLKOUT
+      InputStd, // IO_CLK
       BidirStd, // SOC_GPO11
       BidirStd, // SOC_GPO10
       BidirStd, // SOC_GPO9
@@ -715,7 +711,6 @@ module chip_darjeeling_asic #(
       BidirStd, // SPI_HOST_D2
       BidirStd, // SPI_HOST_D1
       BidirStd, // SPI_HOST_D0
-      AnalogIn1, // OTP_EXT_VOLT
       InputStd, // JTAG_TRST_N
       BidirStd, // JTAG_TDO
       InputStd, // JTAG_TDI
@@ -744,6 +739,9 @@ module chip_darjeeling_asic #(
     .dio_in_raw_o ( dio_in_raw ),
     // Chip IOs
     .dio_pad_io ({
+      IO_TRIGGER,
+      IO_CLKOUT,
+      IO_CLK,
       SOC_GPO11,
       SOC_GPO10,
       SOC_GPO9,
@@ -817,7 +815,6 @@ module chip_darjeeling_asic #(
       SPI_HOST_D2,
       SPI_HOST_D1,
       SPI_HOST_D0,
-      OTP_EXT_VOLT,
       JTAG_TRST_N,
       JTAG_TDO,
       JTAG_TDI,
@@ -843,6 +840,9 @@ module chip_darjeeling_asic #(
 
     // Core-facing
     .dio_in_o ({
+        manual_in_io_trigger,
+        manual_in_io_clkout,
+        manual_in_io_clk,
         dio_in[DioSocProxySocGpo11],
         dio_in[DioSocProxySocGpo10],
         dio_in[DioSocProxySocGpo9],
@@ -916,7 +916,6 @@ module chip_darjeeling_asic #(
         dio_in[DioSpiHost0Sd2],
         dio_in[DioSpiHost0Sd1],
         dio_in[DioSpiHost0Sd0],
-        manual_in_otp_ext_volt,
         manual_in_jtag_trst_n,
         manual_in_jtag_tdo,
         manual_in_jtag_tdi,
@@ -925,6 +924,9 @@ module chip_darjeeling_asic #(
         manual_in_por_n
       }),
     .dio_out_i ({
+        manual_out_io_trigger,
+        manual_out_io_clkout,
+        manual_out_io_clk,
         dio_out[DioSocProxySocGpo11],
         dio_out[DioSocProxySocGpo10],
         dio_out[DioSocProxySocGpo9],
@@ -998,7 +1000,6 @@ module chip_darjeeling_asic #(
         dio_out[DioSpiHost0Sd2],
         dio_out[DioSpiHost0Sd1],
         dio_out[DioSpiHost0Sd0],
-        manual_out_otp_ext_volt,
         manual_out_jtag_trst_n,
         manual_out_jtag_tdo,
         manual_out_jtag_tdi,
@@ -1007,6 +1008,9 @@ module chip_darjeeling_asic #(
         manual_out_por_n
       }),
     .dio_oe_i ({
+        manual_oe_io_trigger,
+        manual_oe_io_clkout,
+        manual_oe_io_clk,
         dio_oe[DioSocProxySocGpo11],
         dio_oe[DioSocProxySocGpo10],
         dio_oe[DioSocProxySocGpo9],
@@ -1080,7 +1084,6 @@ module chip_darjeeling_asic #(
         dio_oe[DioSpiHost0Sd2],
         dio_oe[DioSpiHost0Sd1],
         dio_oe[DioSpiHost0Sd0],
-        manual_oe_otp_ext_volt,
         manual_oe_jtag_trst_n,
         manual_oe_jtag_tdo,
         manual_oe_jtag_tdi,
@@ -1089,6 +1092,9 @@ module chip_darjeeling_asic #(
         manual_oe_por_n
       }),
     .dio_attr_i ({
+        manual_attr_io_trigger,
+        manual_attr_io_clkout,
+        manual_attr_io_clk,
         dio_attr[DioSocProxySocGpo11],
         dio_attr[DioSocProxySocGpo10],
         dio_attr[DioSocProxySocGpo9],
@@ -1162,7 +1168,6 @@ module chip_darjeeling_asic #(
         dio_attr[DioSpiHost0Sd2],
         dio_attr[DioSpiHost0Sd1],
         dio_attr[DioSpiHost0Sd0],
-        manual_attr_otp_ext_volt,
         manual_attr_jtag_trst_n,
         manual_attr_jtag_tdo,
         manual_attr_jtag_tdi,
@@ -1321,12 +1326,48 @@ module chip_darjeeling_asic #(
   logic unused_pwr_clamp;
   assign unused_pwr_clamp = pwrmgr_ast_req.pwr_clamp;
 
+  // Clock generation for the ChipWhisperer CW340 (Kintex UltraScale KU095).
+  // AST's own PLL is not synthesizable on an FPGA, so clkgen_xil_ultrascale
+  // instantiates a Xilinx MMCME2_ADV hard macro instead and feeds AST's
+  // clk_osc_byp_i oscillator-bypass input (present unconditionally in
+  // ast.sv/io_clk.sv/aon_clk.sv/sys_clk.sv, active only when synthesized
+  // with -verilog_define AST_BYPASS_CLK).
+  logic clk_main, clk_io, clk_usb_48mhz, clk_aon, rst_n;
+  clkgen_xil_ultrascale #(
+    .AddClkBuf(0)
+  ) u_clkgen (
+    .clk_i(manual_in_io_clk),
+    .rst_ni(manual_in_por_n),
+    .clk_main_o(clk_main),
+    .clk_io_o(clk_io),
+    .clk_48MHz_o(clk_usb_48mhz),
+    .clk_aon_o(clk_aon),
+    .rst_no(rst_n)
+  );
+
+  logic [31:0] fpga_info;
+  usr_access_xil7series u_info (
+    .info_o(fpga_info)
+  );
+
+  ast_pkg::clks_osc_byp_t clks_osc_byp;
+  assign clks_osc_byp = '{
+    sys: clk_main,
+    io:  clk_io,
+    aon: clk_aon
+  };
+
+  // Darjeeling's AST has no dedicated USB clock domain (no usbdev IP), so
+  // clk_usb_48mhz has no consumer today.
+  logic unused_clk_usb_48mhz;
+  assign unused_clk_usb_48mhz = clk_usb_48mhz;
+
   ast #(
     .Ast2PadOutWidth(ast_pkg::Ast2PadOutWidth),
     .Pad2AstInWidth(ast_pkg::Pad2AstInWidth)
   ) u_ast (
     // external POR
-    .por_ni                ( manual_in_por_n ),
+    .por_ni                ( rst_n ),
 
     // Direct short to PAD
     .ast2pad_t0_ao         ( unused_t0 ),
@@ -1336,6 +1377,8 @@ module chip_darjeeling_asic #(
     .sns_clks_i            ( clkmgr_clocks ),
     .sns_rsts_i            ( rstmgr_resets ),
     .sns_spi_ext_clk_i     ( sck_monitor   ),
+    // clocks' oscillator bypass for cw340
+    .clk_osc_byp_i         ( clks_osc_byp ),
     // tlul
     .tl_i                  ( ast_tl_req ),
     .tl_o                  ( ast_tl_rsp ),
@@ -1621,17 +1664,22 @@ module chip_darjeeling_asic #(
   assign manual_oe_por_n = 1'b0;
   assign manual_attr_por_n = '0;
 
-  assign manual_out_otp_ext_volt = 1'b0;
-  assign manual_oe_otp_ext_volt = 1'b0;
 
-  // This pad attribute currently tied off permanently (this is an input-only pad).
-  assign manual_attr_otp_ext_volt = '0;
+  // IO_CLK is consumed directly by u_clkgen above; only its unused
+  // out/oe/attr sides need tying off here.
+  assign manual_out_io_clk = 1'b0;
+  assign manual_oe_io_clk = 1'b0;
+  assign manual_attr_io_clk = '0;
 
-  logic unused_manual_sigs;
-  assign unused_manual_sigs = ^{
-    manual_in_otp_ext_volt
-  };
-
+  // Reserved for later ChipWhisperer SCA/FI use (see the 'cw340' target in
+  // hw/top_darjeeling/data/top_darjeeling.hjson); left as unused, undriven
+  // bidirectional pads for v1 bring-up.
+  assign manual_out_io_clkout = 1'b0;
+  assign manual_oe_io_clkout = 1'b0;
+  assign manual_attr_io_clkout = '0;
+  assign manual_out_io_trigger = 1'b0;
+  assign manual_oe_io_trigger = 1'b0;
+  assign manual_attr_io_trigger = '0;
 
   // The power manager waits until the external reset request is removed by the SoC before
   // proceeding to boot after an internal reset request. DV may also drive this signal briefly and
@@ -1651,6 +1699,14 @@ module chip_darjeeling_asic #(
     .SecRomCtrl0DisableScrambling(SecRomCtrl0DisableScrambling),
     .SecRomCtrl1DisableScrambling(SecRomCtrl1DisableScrambling),
     .PinmuxTargetCfg(PinmuxTargetCfg)
+    ,
+    // TODO(fpga-bringup): tune FPGA resource/masking parameters (AES/KMAC/
+    // OTBN regfile, Ibex config, etc., see hw/top_earlgrey/templates/chiplevel.sv.tpl's
+    // cw340 section for earlgrey's equivalents) once initial bring-up and
+    // timing closure on the KU095 is complete. Left at RTL defaults for v1.
+    .OtpMacroMemInitFile(OtpMacroMemInitFile),
+    .RomCtrl0BootRomInitFile(RomCtrl0BootRomInitFile),
+    .RomCtrl1BootRomInitFile(RomCtrl1BootRomInitFile)
   ) top_darjeeling (
     // Base clocks from AST
     .ast_base_clks_i(ast_base_clks),
@@ -1764,13 +1820,13 @@ module chip_darjeeling_asic #(
     .pwrmgr_ast_rsp_i                      (pwrmgr_ast_rsp           ),
     .otp_macro_pwr_seq_o                   (otp_macro_pwr_seq        ),
     .otp_macro_pwr_seq_h_i                 (otp_macro_pwr_seq_h      ),
-    .otp_ext_voltage_h_io                  (OTP_EXT_VOLT             ),
+    .otp_ext_voltage_h_io                  ('0                       ),
     .otp_obs_o                             (otp_obs                  ),
     .otp_cfg_i                             (otp_cfg                  ),
     .por_n_i                               (por_n                    ),
     .rstmgr_resets_o                       (rstmgr_resets            ),
     .rstmgr_rst_en_o                       (                         ),
-    .fpga_info_i                           ('0                       ),
+    .fpga_info_i                           (fpga_info                ),
     .ctn_misc_tl_h2d_i                     (ctn_misc_tl_h2d_i        ),
     .ctn_misc_tl_d2h_o                     (ctn_misc_tl_d2h_o        ),
     .soc_wkup_async_i                      (1'b0                     ),

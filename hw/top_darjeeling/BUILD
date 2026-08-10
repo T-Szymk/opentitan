@@ -6,6 +6,7 @@ load(
     "//rules/opentitan:defs.bzl",
     "DEFAULT_TEST_FAILURE_MSG",
     "DEFAULT_TEST_SUCCESS_MSG",
+    "fpga_cw340",
     "sim_dv",
     "sim_verilator",
 )
@@ -117,4 +118,26 @@ sim_dv(
     base = ":sim_dv_base",
     exec_env = "sim_dv",
     rom = "//sw/device/lib/testing/test_rom:test_rom",
+)
+
+###########################################################################
+# FPGA CW340 Environment
+#
+# Provides the arch/dt config needed to build ROM/software images targeting
+# the ChipWhisperer CW340 board. Not wired up for bazel-driven
+# `opentitan_test` execution (test_cmd is unsupported) -- v1 bring-up
+# programs the FPGA and observes results through fpga_flow/'s Makefile+TCL
+# flow instead, which invokes this target only to obtain compiled artifacts.
+###########################################################################
+fpga_cw340(
+    name = "fpga_cw340",
+    design = "darjeeling",
+    exec_env = "fpga_cw340",
+    libs = [
+        "//sw/device/lib/arch:boot_stage_rom_ext",
+        "//sw/device/lib/arch:fpga_cw340",
+        "//hw/top_darjeeling/sw/dt:fpga_cw340",
+    ],
+    linker_script = "//sw/device/lib/testing/test_framework:ottf_ld_silicon_creator_slot_a",
+    test_cmd = "testing-not-supported",
 )

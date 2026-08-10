@@ -8,3 +8,4 @@ util/topgen.py -t hw/top_darjeeling/data/top_darjeeling.hjson -o hw/top_darjeeli
 |:-------------:|:-----------:|:-------------:|:--------------:|:--------------:|:-------------:|:-------------------------------------:|
 |     ASIC      |      1      |      12       |       73       |       7        |      92       |   [Pinout Table](./pinout_asic.md)    |
 |   VERILATOR   |      1      |      12       |       73       |       7        |      92       | [Pinout Table](./pinout_verilator.md) |
+|     CW340     |      1      |      12       |       73       |       9        |      94       |   [Pinout Table](./pinout_cw340.md)   |

@@ -1,0 +1,82 @@
+CAPI=2:
+# Copyright lowRISC contributors (OpenTitan project).
+# Licensed under the Apache License, Version 2.0, see LICENSE for details.
+# SPDX-License-Identifier: Apache-2.0
+name: "lowrisc:systems:chip_darjeeling_cw340:0.1"
+description: "Darjeeling toplevel for the ChipWhisperer CW340 board"
+filesets:
+  files_rtl_cw340:
+    depend:
+      - lowrisc:systems:top_darjeeling:0.1
+      - lowrisc:systems:top_darjeeling_pkg
+      - lowrisc:systems:top_darjeeling_padring
+      - lowrisc:systems:top_darjeeling_ast
+      - lowrisc:darjeeling_systems:pad_orient_pkg
+      - lowrisc:darjeeling_systems:scan_role_pkg
+      - lowrisc:prim_xilinx_ultrascale:all
+    files:
+      - rtl/clkgen_xil_ultrascale.sv
+      - rtl/usr_access_xil7series.sv
+      - rtl/autogen/chip_darjeeling_cw340.sv
+    file_type: systemVerilogSource
+
+  files_constraints:
+    files:
+      - data/clocks_darjeeling_cw341.xdc
+      - data/pins_darjeeling_cw341.xdc
+    file_type: xdc
+
+  files_ascentlint_waiver:
+    depend:
+      # common waivers
+      - lowrisc:lint:common
+      - lowrisc:lint:comportable
+    file_type: waiver
+
+parameters:
+  # XXX: These parameters need to be absolute, or relative to the
+  # *.runs/synth_1 directory. Pass them as absolute paths when invoking
+  # fusesoc, e.g. via fpga_flow/scripts/build_rom_image.py's output paths.
+  RomCtrl0BootRomInitFile:
+    datatype: str
+    description: Scrambled rom_ctrl0 boot ROM initialization file in vmem hex format
+    default: ""
+    paramtype: vlogparam
+
+  RomCtrl1BootRomInitFile:
+    datatype: str
+    description: Scrambled rom_ctrl1 boot ROM initialization file in vmem hex format
+    default: ""
+    paramtype: vlogparam
+
+  OtpMacroMemInitFile:
+    datatype: str
+    description: OTP macro initialization file in vmem hex format
+    default: ""
+    paramtype: vlogparam
+
+  AST_BYPASS_CLK:
+    datatype: bool
+    description: Enable AST oscillator bypass so clkgen_xil_ultrascale's MMCM drives the clock tree instead of AST's own (non-synthesizable) PLL.
+    default: true
+    paramtype: vlogdefine
+
+targets:
+  default: &default_target
+    filesets:
+      - tool_ascentlint  ? (files_ascentlint_waiver)
+      - files_rtl_cw340
+      - files_constraints
+    toplevel: chip_darjeeling_cw340
+    parameters:
+      - RomCtrl0BootRomInitFile
+      - RomCtrl1BootRomInitFile
+      - OtpMacroMemInitFile
+      - AST_BYPASS_CLK
+
+  synth:
+    <<: *default_target
+    default_tool: vivado
+    tools:
+      vivado:
+        part: "xcku095-ffva1156-1-c"

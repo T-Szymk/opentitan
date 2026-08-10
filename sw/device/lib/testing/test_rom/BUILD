@@ -37,6 +37,7 @@ opentitan_binary(
         "//hw/top_earlgrey:sim_verilator_base",
         "//hw/top_darjeeling:sim_dv_base",
         "//hw/top_darjeeling:sim_verilator_base",
+        "//hw/top_darjeeling:fpga_cw340",
     ],
     features = ["use_lld"],
     kind = "rom",
