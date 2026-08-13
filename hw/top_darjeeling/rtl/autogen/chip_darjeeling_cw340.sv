@@ -324,6 +324,41 @@ module chip_darjeeling_cw340 #(
   logic [pinmux_reg_pkg::NDioPads-1:0] dio_oe;
   logic [pinmux_reg_pkg::NDioPads-1:0] dio_in;
 
+  logic [pinmux_reg_pkg::NMioPads-1:0] mio_in_raw;
+  logic                         [81:0] dio_in_raw;
+
+  logic unused_mio_in_raw;
+  logic unused_dio_in_raw;
+  assign unused_mio_in_raw = ^mio_in_raw;
+  assign unused_dio_in_raw = ^dio_in_raw;
+
+  // Manual pads
+  logic manual_in_por_n, manual_out_por_n, manual_oe_por_n;
+  logic manual_in_jtag_tck, manual_out_jtag_tck, manual_oe_jtag_tck;
+  logic manual_in_jtag_tms, manual_out_jtag_tms, manual_oe_jtag_tms;
+  logic manual_in_jtag_tdi, manual_out_jtag_tdi, manual_oe_jtag_tdi;
+  logic manual_in_jtag_tdo, manual_out_jtag_tdo, manual_oe_jtag_tdo;
+  logic manual_in_jtag_trst_n, manual_out_jtag_trst_n, manual_oe_jtag_trst_n;
+  logic manual_in_io_clk, manual_out_io_clk, manual_oe_io_clk;
+  logic manual_in_io_clkout, manual_out_io_clkout, manual_oe_io_clkout;
+  logic manual_in_io_trigger, manual_out_io_trigger, manual_oe_io_trigger;
+
+  pad_attr_t manual_attr_por_n;
+  pad_attr_t manual_attr_jtag_tck;
+  pad_attr_t manual_attr_jtag_tms;
+  pad_attr_t manual_attr_jtag_tdi;
+  pad_attr_t manual_attr_jtag_tdo;
+  pad_attr_t manual_attr_jtag_trst_n;
+  pad_attr_t manual_attr_io_clk;
+  pad_attr_t manual_attr_io_clkout;
+  pad_attr_t manual_attr_io_trigger;
+
+  /////////////////////////
+  // Stubbed pad tie-off //
+  /////////////////////////
+
+  // Only signals going to non-custom pads need to be tied off.
+  logic [91:0] unused_sig;
 
   //////////////////////
   // Padring Instance //
@@ -338,302 +373,6 @@ module chip_darjeeling_cw340 #(
     // to custom, stubbed or added pads.
     .NDioPads(82),
     .NMioPads(12),
-    .PhysicalPads(1),
-    .NIoBanks(int'(IoBankCount)),
-    .DioScanRole ({
-      scan_role_pkg::DioPadIoTriggerScanRole,
-      scan_role_pkg::DioPadIoClkoutScanRole,
-      scan_role_pkg::DioPadIoClkScanRole,
-      scan_role_pkg::DioPadSocGpo11ScanRole,
-      scan_role_pkg::DioPadSocGpo10ScanRole,
-      scan_role_pkg::DioPadSocGpo9ScanRole,
-      scan_role_pkg::DioPadSocGpo8ScanRole,
-      scan_role_pkg::DioPadSocGpo7ScanRole,
-      scan_role_pkg::DioPadSocGpo6ScanRole,
-      scan_role_pkg::DioPadSocGpo5ScanRole,
-      scan_role_pkg::DioPadSocGpo4ScanRole,
-      scan_role_pkg::DioPadSocGpo3ScanRole,
-      scan_role_pkg::DioPadSocGpo2ScanRole,
-      scan_role_pkg::DioPadSocGpo1ScanRole,
-      scan_role_pkg::DioPadSocGpo0ScanRole,
-      scan_role_pkg::DioPadSocGpi11ScanRole,
-      scan_role_pkg::DioPadSocGpi10ScanRole,
-      scan_role_pkg::DioPadSocGpi9ScanRole,
-      scan_role_pkg::DioPadSocGpi8ScanRole,
-      scan_role_pkg::DioPadSocGpi7ScanRole,
-      scan_role_pkg::DioPadSocGpi6ScanRole,
-      scan_role_pkg::DioPadSocGpi5ScanRole,
-      scan_role_pkg::DioPadSocGpi4ScanRole,
-      scan_role_pkg::DioPadSocGpi3ScanRole,
-      scan_role_pkg::DioPadSocGpi2ScanRole,
-      scan_role_pkg::DioPadSocGpi1ScanRole,
-      scan_role_pkg::DioPadSocGpi0ScanRole,
-      scan_role_pkg::DioPadGpio31ScanRole,
-      scan_role_pkg::DioPadGpio30ScanRole,
-      scan_role_pkg::DioPadGpio29ScanRole,
-      scan_role_pkg::DioPadGpio28ScanRole,
-      scan_role_pkg::DioPadGpio27ScanRole,
-      scan_role_pkg::DioPadGpio26ScanRole,
-      scan_role_pkg::DioPadGpio25ScanRole,
-      scan_role_pkg::DioPadGpio24ScanRole,
-      scan_role_pkg::DioPadGpio23ScanRole,
-      scan_role_pkg::DioPadGpio22ScanRole,
-      scan_role_pkg::DioPadGpio21ScanRole,
-      scan_role_pkg::DioPadGpio20ScanRole,
-      scan_role_pkg::DioPadGpio19ScanRole,
-      scan_role_pkg::DioPadGpio18ScanRole,
-      scan_role_pkg::DioPadGpio17ScanRole,
-      scan_role_pkg::DioPadGpio16ScanRole,
-      scan_role_pkg::DioPadGpio15ScanRole,
-      scan_role_pkg::DioPadGpio14ScanRole,
-      scan_role_pkg::DioPadGpio13ScanRole,
-      scan_role_pkg::DioPadGpio12ScanRole,
-      scan_role_pkg::DioPadGpio11ScanRole,
-      scan_role_pkg::DioPadGpio10ScanRole,
-      scan_role_pkg::DioPadGpio9ScanRole,
-      scan_role_pkg::DioPadGpio8ScanRole,
-      scan_role_pkg::DioPadGpio7ScanRole,
-      scan_role_pkg::DioPadGpio6ScanRole,
-      scan_role_pkg::DioPadGpio5ScanRole,
-      scan_role_pkg::DioPadGpio4ScanRole,
-      scan_role_pkg::DioPadGpio3ScanRole,
-      scan_role_pkg::DioPadGpio2ScanRole,
-      scan_role_pkg::DioPadGpio1ScanRole,
-      scan_role_pkg::DioPadGpio0ScanRole,
-      scan_role_pkg::DioPadI2cSdaScanRole,
-      scan_role_pkg::DioPadI2cSclScanRole,
-      scan_role_pkg::DioPadUartTxScanRole,
-      scan_role_pkg::DioPadUartRxScanRole,
-      scan_role_pkg::DioPadSpiDevTpmCsLScanRole,
-      scan_role_pkg::DioPadSpiDevCsLScanRole,
-      scan_role_pkg::DioPadSpiDevClkScanRole,
-      scan_role_pkg::DioPadSpiDevD3ScanRole,
-      scan_role_pkg::DioPadSpiDevD2ScanRole,
-      scan_role_pkg::DioPadSpiDevD1ScanRole,
-      scan_role_pkg::DioPadSpiDevD0ScanRole,
-      scan_role_pkg::DioPadSpiHostCsLScanRole,
-      scan_role_pkg::DioPadSpiHostClkScanRole,
-      scan_role_pkg::DioPadSpiHostD3ScanRole,
-      scan_role_pkg::DioPadSpiHostD2ScanRole,
-      scan_role_pkg::DioPadSpiHostD1ScanRole,
-      scan_role_pkg::DioPadSpiHostD0ScanRole,
-      scan_role_pkg::DioPadJtagTrstNScanRole,
-      scan_role_pkg::DioPadJtagTdoScanRole,
-      scan_role_pkg::DioPadJtagTdiScanRole,
-      scan_role_pkg::DioPadJtagTmsScanRole,
-      scan_role_pkg::DioPadJtagTckScanRole,
-      scan_role_pkg::DioPadPorNScanRole
-    }),
-    .MioScanRole ({
-      scan_role_pkg::MioPadMio11ScanRole,
-      scan_role_pkg::MioPadMio10ScanRole,
-      scan_role_pkg::MioPadMio9ScanRole,
-      scan_role_pkg::MioPadMio8ScanRole,
-      scan_role_pkg::MioPadMio7ScanRole,
-      scan_role_pkg::MioPadMio6ScanRole,
-      scan_role_pkg::MioPadMio5ScanRole,
-      scan_role_pkg::MioPadMio4ScanRole,
-      scan_role_pkg::MioPadMio3ScanRole,
-      scan_role_pkg::MioPadMio2ScanRole,
-      scan_role_pkg::MioPadMio1ScanRole,
-      scan_role_pkg::MioPadMio0ScanRole
-    }),
-    .DioPadOrient ({
-      pad_orient_pkg::DioPadIoTriggerPadOrient,
-      pad_orient_pkg::DioPadIoClkoutPadOrient,
-      pad_orient_pkg::DioPadIoClkPadOrient,
-      pad_orient_pkg::DioPadSocGpo11PadOrient,
-      pad_orient_pkg::DioPadSocGpo10PadOrient,
-      pad_orient_pkg::DioPadSocGpo9PadOrient,
-      pad_orient_pkg::DioPadSocGpo8PadOrient,
-      pad_orient_pkg::DioPadSocGpo7PadOrient,
-      pad_orient_pkg::DioPadSocGpo6PadOrient,
-      pad_orient_pkg::DioPadSocGpo5PadOrient,
-      pad_orient_pkg::DioPadSocGpo4PadOrient,
-      pad_orient_pkg::DioPadSocGpo3PadOrient,
-      pad_orient_pkg::DioPadSocGpo2PadOrient,
-      pad_orient_pkg::DioPadSocGpo1PadOrient,
-      pad_orient_pkg::DioPadSocGpo0PadOrient,
-      pad_orient_pkg::DioPadSocGpi11PadOrient,
-      pad_orient_pkg::DioPadSocGpi10PadOrient,
-      pad_orient_pkg::DioPadSocGpi9PadOrient,
-      pad_orient_pkg::DioPadSocGpi8PadOrient,
-      pad_orient_pkg::DioPadSocGpi7PadOrient,
-      pad_orient_pkg::DioPadSocGpi6PadOrient,
-      pad_orient_pkg::DioPadSocGpi5PadOrient,
-      pad_orient_pkg::DioPadSocGpi4PadOrient,
-      pad_orient_pkg::DioPadSocGpi3PadOrient,
-      pad_orient_pkg::DioPadSocGpi2PadOrient,
-      pad_orient_pkg::DioPadSocGpi1PadOrient,
-      pad_orient_pkg::DioPadSocGpi0PadOrient,
-      pad_orient_pkg::DioPadGpio31PadOrient,
-      pad_orient_pkg::DioPadGpio30PadOrient,
-      pad_orient_pkg::DioPadGpio29PadOrient,
-      pad_orient_pkg::DioPadGpio28PadOrient,
-      pad_orient_pkg::DioPadGpio27PadOrient,
-      pad_orient_pkg::DioPadGpio26PadOrient,
-      pad_orient_pkg::DioPadGpio25PadOrient,
-      pad_orient_pkg::DioPadGpio24PadOrient,
-      pad_orient_pkg::DioPadGpio23PadOrient,
-      pad_orient_pkg::DioPadGpio22PadOrient,
-      pad_orient_pkg::DioPadGpio21PadOrient,
-      pad_orient_pkg::DioPadGpio20PadOrient,
-      pad_orient_pkg::DioPadGpio19PadOrient,
-      pad_orient_pkg::DioPadGpio18PadOrient,
-      pad_orient_pkg::DioPadGpio17PadOrient,
-      pad_orient_pkg::DioPadGpio16PadOrient,
-      pad_orient_pkg::DioPadGpio15PadOrient,
-      pad_orient_pkg::DioPadGpio14PadOrient,
-      pad_orient_pkg::DioPadGpio13PadOrient,
-      pad_orient_pkg::DioPadGpio12PadOrient,
-      pad_orient_pkg::DioPadGpio11PadOrient,
-      pad_orient_pkg::DioPadGpio10PadOrient,
-      pad_orient_pkg::DioPadGpio9PadOrient,
-      pad_orient_pkg::DioPadGpio8PadOrient,
-      pad_orient_pkg::DioPadGpio7PadOrient,
-      pad_orient_pkg::DioPadGpio6PadOrient,
-      pad_orient_pkg::DioPadGpio5PadOrient,
-      pad_orient_pkg::DioPadGpio4PadOrient,
-      pad_orient_pkg::DioPadGpio3PadOrient,
-      pad_orient_pkg::DioPadGpio2PadOrient,
-      pad_orient_pkg::DioPadGpio1PadOrient,
-      pad_orient_pkg::DioPadGpio0PadOrient,
-      pad_orient_pkg::DioPadI2cSdaPadOrient,
-      pad_orient_pkg::DioPadI2cSclPadOrient,
-      pad_orient_pkg::DioPadUartTxPadOrient,
-      pad_orient_pkg::DioPadUartRxPadOrient,
-      pad_orient_pkg::DioPadSpiDevTpmCsLPadOrient,
-      pad_orient_pkg::DioPadSpiDevCsLPadOrient,
-      pad_orient_pkg::DioPadSpiDevClkPadOrient,
-      pad_orient_pkg::DioPadSpiDevD3PadOrient,
-      pad_orient_pkg::DioPadSpiDevD2PadOrient,
-      pad_orient_pkg::DioPadSpiDevD1PadOrient,
-      pad_orient_pkg::DioPadSpiDevD0PadOrient,
-      pad_orient_pkg::DioPadSpiHostCsLPadOrient,
-      pad_orient_pkg::DioPadSpiHostClkPadOrient,
-      pad_orient_pkg::DioPadSpiHostD3PadOrient,
-      pad_orient_pkg::DioPadSpiHostD2PadOrient,
-      pad_orient_pkg::DioPadSpiHostD1PadOrient,
-      pad_orient_pkg::DioPadSpiHostD0PadOrient,
-      pad_orient_pkg::DioPadJtagTrstNPadOrient,
-      pad_orient_pkg::DioPadJtagTdoPadOrient,
-      pad_orient_pkg::DioPadJtagTdiPadOrient,
-      pad_orient_pkg::DioPadJtagTmsPadOrient,
-      pad_orient_pkg::DioPadJtagTckPadOrient,
-      pad_orient_pkg::DioPadPorNPadOrient
-    }),
-    .MioPadOrient ({
-      pad_orient_pkg::MioPadMio11PadOrient,
-      pad_orient_pkg::MioPadMio10PadOrient,
-      pad_orient_pkg::MioPadMio9PadOrient,
-      pad_orient_pkg::MioPadMio8PadOrient,
-      pad_orient_pkg::MioPadMio7PadOrient,
-      pad_orient_pkg::MioPadMio6PadOrient,
-      pad_orient_pkg::MioPadMio5PadOrient,
-      pad_orient_pkg::MioPadMio4PadOrient,
-      pad_orient_pkg::MioPadMio3PadOrient,
-      pad_orient_pkg::MioPadMio2PadOrient,
-      pad_orient_pkg::MioPadMio1PadOrient,
-      pad_orient_pkg::MioPadMio0PadOrient
-    }),
-    .DioPadBank ({
-      IoBankVio, // IO_TRIGGER
-      IoBankVio, // IO_CLKOUT
-      IoBankVio, // IO_CLK
-      IoBankVio, // SOC_GPO11
-      IoBankVio, // SOC_GPO10
-      IoBankVio, // SOC_GPO9
-      IoBankVio, // SOC_GPO8
-      IoBankVio, // SOC_GPO7
-      IoBankVio, // SOC_GPO6
-      IoBankVio, // SOC_GPO5
-      IoBankVio, // SOC_GPO4
-      IoBankVio, // SOC_GPO3
-      IoBankVio, // SOC_GPO2
-      IoBankVio, // SOC_GPO1
-      IoBankVio, // SOC_GPO0
-      IoBankVio, // SOC_GPI11
-      IoBankVio, // SOC_GPI10
-      IoBankVio, // SOC_GPI9
-      IoBankVio, // SOC_GPI8
-      IoBankVio, // SOC_GPI7
-      IoBankVio, // SOC_GPI6
-      IoBankVio, // SOC_GPI5
-      IoBankVio, // SOC_GPI4
-      IoBankVio, // SOC_GPI3
-      IoBankVio, // SOC_GPI2
-      IoBankVio, // SOC_GPI1
-      IoBankVio, // SOC_GPI0
-      IoBankVio, // GPIO31
-      IoBankVio, // GPIO30
-      IoBankVio, // GPIO29
-      IoBankVio, // GPIO28
-      IoBankVio, // GPIO27
-      IoBankVio, // GPIO26
-      IoBankVio, // GPIO25
-      IoBankVio, // GPIO24
-      IoBankVio, // GPIO23
-      IoBankVio, // GPIO22
-      IoBankVio, // GPIO21
-      IoBankVio, // GPIO20
-      IoBankVio, // GPIO19
-      IoBankVio, // GPIO18
-      IoBankVio, // GPIO17
-      IoBankVio, // GPIO16
-      IoBankVio, // GPIO15
-      IoBankVio, // GPIO14
-      IoBankVio, // GPIO13
-      IoBankVio, // GPIO12
-      IoBankVio, // GPIO11
-      IoBankVio, // GPIO10
-      IoBankVio, // GPIO9
-      IoBankVio, // GPIO8
-      IoBankVio, // GPIO7
-      IoBankVio, // GPIO6
-      IoBankVio, // GPIO5
-      IoBankVio, // GPIO4
-      IoBankVio, // GPIO3
-      IoBankVio, // GPIO2
-      IoBankVio, // GPIO1
-      IoBankVio, // GPIO0
-      IoBankVio, // I2C_SDA
-      IoBankVio, // I2C_SCL
-      IoBankVio, // UART_TX
-      IoBankVio, // UART_RX
-      IoBankVio, // SPI_DEV_TPM_CS_L
-      IoBankVio, // SPI_DEV_CS_L
-      IoBankVio, // SPI_DEV_CLK
-      IoBankVio, // SPI_DEV_D3
-      IoBankVio, // SPI_DEV_D2
-      IoBankVio, // SPI_DEV_D1
-      IoBankVio, // SPI_DEV_D0
-      IoBankVio, // SPI_HOST_CS_L
-      IoBankVio, // SPI_HOST_CLK
-      IoBankVio, // SPI_HOST_D3
-      IoBankVio, // SPI_HOST_D2
-      IoBankVio, // SPI_HOST_D1
-      IoBankVio, // SPI_HOST_D0
-      IoBankVio, // JTAG_TRST_N
-      IoBankVio, // JTAG_TDO
-      IoBankVio, // JTAG_TDI
-      IoBankVio, // JTAG_TMS
-      IoBankVio, // JTAG_TCK
-      IoBankVio  // POR_N
-    }),
-    .MioPadBank ({
-      IoBankVio, // MIO11
-      IoBankVio, // MIO10
-      IoBankVio, // MIO9
-      IoBankVio, // MIO8
-      IoBankVio, // MIO7
-      IoBankVio, // MIO6
-      IoBankVio, // MIO5
-      IoBankVio, // MIO4
-      IoBankVio, // MIO3
-      IoBankVio, // MIO2
-      IoBankVio, // MIO1
-      IoBankVio  // MIO0
-    }),
     .DioPadType ({
       BidirStd, // IO_TRIGGER
       BidirStd, // IO_CLKOUT

@@ -201,7 +201,7 @@ module chip_${top["name"]}_${target["name"]} #(
   logic [pinmux_reg_pkg::NDioPads-1:0] dio_oe;
   logic [pinmux_reg_pkg::NDioPads-1:0] dio_in;
 
-% if target["name"] == "asic":
+% if target["name"] != "verilator":
   logic [pinmux_reg_pkg::NMioPads-1:0] mio_in_raw;
   logic                         [${len(dedicated_pads)-1}:0] dio_in_raw;
 
@@ -290,6 +290,7 @@ module chip_${top["name"]}_${target["name"]} #(
     // to custom, stubbed or added pads.
     .NDioPads(${len(dedicated_pads)}),
     .NMioPads(${len(muxed_pads)}),
+% if target["name"] == "asic":
     .PhysicalPads(1),
     .NIoBanks(int'(IoBankCount)),
     .DioScanRole ({
@@ -322,6 +323,7 @@ module chip_${top["name"]}_${target["name"]} #(
       ${lib.Name.from_snake_case('io_bank_' + pad["bank"]).as_camel_case()}${" " if loop.last else ","} // ${pad['name']}
 % endfor
     }),
+% endif
 \
 \
     .DioPadType ({
