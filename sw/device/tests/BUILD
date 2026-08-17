@@ -1815,6 +1815,16 @@ opentitan_test(
     exec_env = dicts.add(
         EARLGREY_TEST_ENVS,
         EARLGREY_SILICON_OWNER_ROM_EXT_ENVS,
+        {
+            # No longer relevant on RRAM; exclude the FPGA sival_rom_ext and
+            # rom_with_fake_keys variants from CI entirely.
+            # https://github.com/lowRISC/opentitan/issues/30897
+            "//hw/top_earlgrey:fpga_cw340_sival_rom_ext": "fpga_skip_ci",
+            "//hw/top_earlgrey:fpga_cw340_rom_with_fake_keys": "fpga_skip_ci",
+        },
+    ),
+    fpga_skip_ci = fpga_params(
+        tags = ["skip_in_ci"],
     ),
     deps = [
         "//hw/top_earlgrey/sw/autogen:top_earlgrey",
@@ -1842,11 +1852,9 @@ opentitan_test(
         EARLGREY_TEST_ENVS,
         EARLGREY_SILICON_OWNER_ROM_EXT_ENVS,
     ),
-    # Run also as ROM_EXT stage as test coverage is reduced in silicon owner stage.
-    run_in_ci = [
-        "//hw/top_earlgrey:fpga_cw340_sival_rom_ext",
-        "//hw/top_earlgrey:fpga_cw340_rom_with_fake_keys",
-    ],
+    # No longer relevant on RRAM; exclude all FPGA variants from CI entirely.
+    # https://github.com/lowRISC/opentitan/issues/30897
+    fpga = fpga_params(tags = ["skip_in_ci"]),
     deps = [
         "//hw/top:otp_ctrl_c_regs",
         "//hw/top_earlgrey/sw/autogen:top_earlgrey",
@@ -1990,11 +1998,10 @@ opentitan_test(
         EARLGREY_TEST_ENVS,
         EARLGREY_SILICON_OWNER_ROM_EXT_ENVS,
     ),
-    # Run also as ROM_EXT stage as test coverage is reduced in silicon owner stage.
-    run_in_ci = [
-        "//hw/top_earlgrey:fpga_cw340_sival_rom_ext",
-        "//hw/top_earlgrey:fpga_cw340_rom_with_fake_keys",
-    ],
+    # No longer relevant on RRAM (no flash clock domain to test); exclude all
+    # FPGA variants from CI entirely.
+    # https://github.com/lowRISC/opentitan/issues/30897
+    fpga = fpga_params(tags = ["skip_in_ci"]),
     verilator = verilator_params(timeout = "long"),
     deps = [
         "//hw/top:otp_ctrl_c_regs",
@@ -2020,11 +2027,9 @@ opentitan_test(
             "//hw/top_earlgrey:silicon_creator": None,
         },
     ),
-    # Run also as ROM_EXT stage as test coverage is reduced in silicon owner stage.
-    run_in_ci = [
-        "//hw/top_earlgrey:fpga_cw340_sival_rom_ext",
-        "//hw/top_earlgrey:fpga_cw340_rom_with_fake_keys",
-    ],
+    # No longer relevant on RRAM; exclude all FPGA variants from CI entirely.
+    # https://github.com/lowRISC/opentitan/issues/30897
+    fpga = fpga_params(tags = ["skip_in_ci"]),
     verilator = verilator_params(timeout = "long"),
     deps = [
         "//hw/top/dt",
@@ -6543,6 +6548,11 @@ test_suite(
             needs_jtag = True,
             otp = _SIVAL_OTP_IMAGE[lc_state],
             tags = [
+                # See issue #22823. This test consistently passes when run locally, but in CI
+                # there is frequent failure to connect to the CMSIS-DAP adapter via the HyperDebug
+                # USB after the device wakes from deep sleep and we release Ior13. This failure
+                # should be further investigated and this test should be re-enabled in CI.
+                "skip_in_ci",
                 "lc_{}".format(lc_state),
             ],
             test_cmd = """
@@ -7411,10 +7421,8 @@ opentitan_binary(
         "//hw/top_earlgrey/sw/autogen:top_earlgrey",
         "//sw/device/lib/arch:device",
         "//sw/device/lib/base:macros",
-        "//sw/device/lib/dif:flash_ctrl",
         "//sw/device/lib/runtime:log",
         "//sw/device/lib/runtime:pmp",
-        "//sw/device/lib/testing:flash_ctrl_testutils",
         "//sw/device/lib/testing:nvm_testutils",
         "//sw/device/lib/testing:pinmux_testutils",
         "//sw/device/lib/testing/test_framework:check",
@@ -7442,10 +7450,8 @@ opentitan_test(
         "//hw/top_earlgrey/sw/autogen:top_earlgrey",
         "//sw/device/lib/arch:device",
         "//sw/device/lib/base:macros",
-        "//sw/device/lib/dif:flash_ctrl",
         "//sw/device/lib/runtime:log",
         "//sw/device/lib/runtime:pmp",
-        "//sw/device/lib/testing:flash_ctrl_testutils",
         "//sw/device/lib/testing:nvm_testutils",
         "//sw/device/lib/testing:pinmux_testutils",
         "//sw/device/lib/testing/test_framework:check",
