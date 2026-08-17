@@ -216,6 +216,15 @@ class OTBNState:
         self._wfi_resume_pending = False
         self._wfi_resume = False
 
+        # MAC operand-shuffling offset. The predecoder samples the two LSBs of
+        # URND one cycle before a vectorized multiply executes and uses them to
+        # rotate the order in which the 64b chunks are processed. mac_rnd_offset
+        # is the value visible to an instruction starting in the current cycle,
+        # mac_rnd_offset_predec is the value sampled in the current cycle (used
+        # by an instruction starting in the next cycle).
+        self.mac_rnd_offset = 0
+        self.mac_rnd_offset_predec = 0
+
     def get_next_pc(self) -> int:
         if self._pc_next_override is not None:
             return self._pc_next_override
@@ -438,8 +447,7 @@ class OTBNState:
         # set) is the 'done' flag.
         self.ext_regs.set_bits('INTR_STATE', 1 << 0)
 
-        should_lock = (((self._err_bits >> 16) != 0) or
-                       ((self._err_bits >> 10) & 1 != 0) or
+        should_lock = ((self._err_bits & ErrBits.FATAL_MASK) != 0 or
                        (self._err_bits != 0 and self.software_errs_fatal) or
                        self.rma_req == LcTx.ON)
         # Make any error bits visible

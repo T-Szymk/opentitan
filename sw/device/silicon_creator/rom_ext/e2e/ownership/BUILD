@@ -609,6 +609,9 @@ _FLASH_PERMISSION_TESTS = {
                 --expected-rom-ext-slot={rom_ext_slot}
             """,
             "test_harness": "//sw/host/tests/ownership:flash_permission_test",
+            # No longer relevant on RRAM; exclude all FPGA variants from CI entirely.
+            # https://github.com/lowRISC/opentitan/issues/30897
+            "tags": ["skip_in_ci"],
         },
         linker_script = "//sw/device/lib/testing/test_framework:ottf_ld_silicon_owner_slot_virtual",
         deps = [
@@ -637,7 +640,7 @@ ownership_transfer_test(
             --next-application-key=sw/device/silicon_creator/lib/ownership/keys/dummy/app_prod_ecdsa_p256.pub.der
             --config-kind=with-flash-error
             --dual-owner-boot-check=false
-            --expected-error=OwnershipFlashConfigRomExt
+            --expected-error=OwnershipNvmConfigRomExt
         """,
         "test_harness": "//sw/host/tests/ownership:transfer_test",
     },

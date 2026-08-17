@@ -135,7 +135,7 @@ class chip_env_cfg #(type RAL_T = chip_ral_pkg::chip_reg_block) extends cip_base
   `uvm_object_utils_end
 
 
-  virtual function void initialize();
+  virtual function void initialize(bit inherit_ral_models = 1'b0);
     list_of_alerts = chip_common_pkg::LIST_OF_ALERTS;
     is_chip = 1;
 
@@ -146,7 +146,7 @@ class chip_env_cfg #(type RAL_T = chip_ral_pkg::chip_reg_block) extends cip_base
     // User can read `loc_alert_cause` to check ping timeout.
     en_scb_ping_chk = 0;
 
-    super.initialize();
+    super.initialize(inherit_ral_models);
     `uvm_info(`gfn, $sformatf("ral_model_names: %0p", ral_model_names), UVM_LOW)
 
     // Set the a_source width limitation for the TL agent hooked up to the CPU cored port.
@@ -463,7 +463,10 @@ class chip_env_cfg #(type RAL_T = chip_ral_pkg::chip_reg_block) extends cip_base
             end
           end
         end else if (i == SwTypeOtp) begin
-          otp_images[OtpTypeCustom] = $sformatf("%0s.24.vmem", sw_images[i]);
+          // otp_image()'s RRAM-native output (see rules/otp.bzl's `rram_otp` output group,
+          // fetched by build_sw_collateral_for_sim.py) - rram_ctrl_otp_bkdr_util only
+          // understands that layout, not the native ".24.vmem".
+          otp_images[OtpTypeCustom] = $sformatf("%0s.128.vmem", sw_images[i]);
         end else if (i == SwTypeDebug) begin
           sw_images[i] = $sformatf("%0s_%0s", sw_images[i], sw_build_device);
         end

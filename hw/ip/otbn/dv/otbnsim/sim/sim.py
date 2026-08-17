@@ -4,7 +4,7 @@
 
 from typing import Dict, Iterator, List, Optional, Tuple
 
-from .constants import ErrBits, LcTx, Status, read_lc_tx_t
+from .constants import BN_MAC_PERMUTATION, ErrBits, LcTx, Status, read_lc_tx_t, permute
 from .decode import EmptyInsn
 from .isa import OTBNInsn
 from .state import OTBNState, FsmState
@@ -303,6 +303,14 @@ class OTBNSim:
 
         self.state.wsrs.URND.step()
 
+        # The predecoder samples URND one cycle before a vectorized multiply reaches the execute
+        # stage. Advance the sampled offset by one cycle, then resample from the current URND
+        # value.
+        self.state.mac_rnd_offset = self.state.mac_rnd_offset_predec
+        self.state.mac_rnd_offset_predec = permute(BN_MAC_PERMUTATION,
+                                                   self.state.wsrs.URND.read_unsigned(),
+                                                   2, 192)
+
         insn = self._next_insn
         if insn is None:
             self.state.take_injected_err_bits()
@@ -573,8 +581,15 @@ class OTBNSim:
 
     def send_err_escalation(self,
                             err_val: int, lock_immediately: bool) -> None:
-        '''React to an error escalation'''
-        assert err_val & ~ErrBits.MASK == 0
+        '''React to an error escalation
+
+        err_val uses the layout of the ERR_BITS register.
+
+        '''
+        assert err_val & ~ErrBits.MASK == 0, \
+            ('Injected error 0x{:x} sets bits (0x{:x}) that are not defined in '
+             'the ERR_BITS register.'
+             .format(err_val, err_val & ~ErrBits.MASK))
         self.state.injected_err_bits |= err_val
         self.state.lock_immediately = lock_immediately
 

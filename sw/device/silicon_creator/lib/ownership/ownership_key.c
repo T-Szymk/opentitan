@@ -164,9 +164,10 @@ static void reverse(void *buf, size_t len) {
 }
 
 static void secret_page_enable(multi_bit_bool_t read, multi_bit_bool_t write) {
-  nvm_ctrl_info_perms_set(
-      kNvmInfoPageOwnerSecret,
-      (nvm_page_perms_t){.read = read, .write = write, .erase = write});
+  nvm_ctrl_info_perms_set(kNvmInfoPageOwnerSecret,
+                          (nvm_page_perms_t){.read = (uint32_t)read,
+                                             .write = (uint32_t)write,
+                                             .erase = (uint32_t)write});
 }
 
 rom_error_t ownership_secret_new(uint32_t prior_key_alg,
@@ -240,17 +241,21 @@ exitproc:
   return error;
 }
 
-rom_error_t ownership_history_get(hmac_digest_t *history) {
+rom_error_t ownership_history_get(uint32_t ownership_transfers,
+                                  hmac_digest_t *history) {
   secret_page_enable(/*read=*/kMultiBitBool4True,
                      /*write=*/kMultiBitBool4False);
   rom_error_t error = nvm_ctrl_info_read(
       kNvmInfoPageOwnerSecret, offsetof(owner_secret_page_t, owner_history),
       sizeof(*history) / sizeof(uint32_t), history);
-  if (error != kErrorOk) {
+  secret_page_enable(/*read=*/kMultiBitBool4False,
+                     /*write=*/kMultiBitBool4False);
+
+  // Set history to all ones if there have not been any ownership_transfers yet.
+  if (error != kErrorOk ||
+      (kDeviceType != kDeviceSilicon && ownership_transfers == 0)) {
     // If there was an error reading the history, use all ones as a result.
     memset(history, 0xFF, sizeof(*history));
   }
-  secret_page_enable(/*read=*/kMultiBitBool4False,
-                     /*write=*/kMultiBitBool4False);
   return error;
 }
