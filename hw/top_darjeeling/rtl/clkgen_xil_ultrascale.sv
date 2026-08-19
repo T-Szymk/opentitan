@@ -4,7 +4,15 @@
 
 module clkgen_xil_ultrascale # (
   // Add BUFG if not done by downstream logic
-  parameter bit AddClkBuf = 1
+  parameter bit AddClkBuf = 1,
+  // MMCM reference-clock period (ns) and input dividers -- defaulted to the
+  // values needed for a 100MHz reference (e.g. CW340's IO_CLK). Other
+  // boards with a different reference-clock frequency (e.g. VCU118's 90MHz
+  // EMCCLK) override these to hit the same 1200MHz VCO, and therefore the
+  // same downstream output frequencies, from their own reference clock.
+  parameter real ClkInPeriod = 10.000,
+  parameter int  DivClkDivide = 1,
+  parameter real ClkFbOutMultF = 12.000
 ) (
   input  clk_i,
   input  rst_ni,
@@ -32,9 +40,11 @@ module clkgen_xil_ultrascale # (
     .BANDWIDTH            ("OPTIMIZED"),
     .COMPENSATION         ("ZHOLD"),
     .STARTUP_WAIT         ("FALSE"),
-    .CLKIN1_PERIOD        (10.000), // f_CLKIN = 100 MHz
-    .DIVCLK_DIVIDE        (1),      // f_PFD = 100 MHz
-    .CLKFBOUT_MULT_F      (12.000), // f_VCO = 1200 MHz
+    .CLKIN1_PERIOD        (ClkInPeriod),
+    .DIVCLK_DIVIDE        (DivClkDivide),
+    .CLKFBOUT_MULT_F      (ClkFbOutMultF), // f_VCO = 1200 MHz for both the
+                                            // default (100MHz/1/12.000) and
+                                            // VCU118 (90MHz/3/40.000) configs
     .CLKFBOUT_PHASE       (0.000),
     .CLKOUT0_DIVIDE_F     (50.0),   // f_sys = 24 MHz
     .CLKOUT0_PHASE        (0.000),

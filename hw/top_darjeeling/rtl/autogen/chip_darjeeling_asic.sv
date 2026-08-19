@@ -1633,6 +1633,7 @@ module chip_darjeeling_asic #(
   };
 
 
+
   // The power manager waits until the external reset request is removed by the SoC before
   // proceeding to boot after an internal reset request. DV may also drive this signal briefly and
   // asynchronously to request a reset on behalf of the simulated SoC.

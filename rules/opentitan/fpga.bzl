@@ -6,6 +6,7 @@ load(
     "@lowrisc_opentitan//rules/opentitan:providers.bzl",
     "Cw305BinaryInfo",
     "Cw340BinaryInfo",
+    "Vcu118BinaryInfo",
 )
 load(
     "@lowrisc_opentitan//rules/opentitan:util.bzl",
@@ -333,6 +334,21 @@ def _fpga_cw340(ctx):
 
 fpga_cw340 = rule(
     implementation = _fpga_cw340,
+    attrs = exec_env_common_attrs(),
+    toolchains = [LOCALTOOLS_TOOLCHAIN],
+)
+
+def _fpga_vcu118(ctx):
+    fields = exec_env_as_dict(ctx)
+    return ExecEnvInfo(
+        provider = Vcu118BinaryInfo,
+        test_dispatch = _test_dispatch,
+        transform = _transform,
+        **fields
+    )
+
+fpga_vcu118 = rule(
+    implementation = _fpga_vcu118,
     attrs = exec_env_common_attrs(),
     toolchains = [LOCALTOOLS_TOOLCHAIN],
 )

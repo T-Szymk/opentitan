@@ -28,6 +28,10 @@ Cw340BinaryInfo = provider(
     doc = "CW340 Binary Info",
 )
 
+Vcu118BinaryInfo = provider(
+    doc = "VCU118 Binary Info",
+)
+
 SiliconBinaryInfo = provider(
     doc = "Silicon Binary Info",
 )
@@ -46,6 +50,7 @@ SimQemuBinaryInfo = provider(
 
 ALL_BINARY_PROVIDERS = [
     Cw340BinaryInfo,
+    Vcu118BinaryInfo,
     SiliconBinaryInfo,
     SimDvBinaryInfo,
     SimVerilatorBinaryInfo,

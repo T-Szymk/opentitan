@@ -9,19 +9,19 @@
 //                -o hw/top_darjeeling/
 
 
-module chip_darjeeling_cw340 #(
+module chip_darjeeling_vcu118 #(
   parameter bit SecRomCtrl0DisableScrambling = 1'b0,
   parameter bit SecRomCtrl1DisableScrambling = 1'b0
   ,
   // Path to a VMEM file containing the contents of rom_ctrl0's boot ROM,
   // which will be baked into the FPGA bitstream.
-  parameter RomCtrl0BootRomInitFile = "rom_ctrl0_fpga_cw340.32.vmem",
+  parameter RomCtrl0BootRomInitFile = "rom_ctrl0_fpga_vcu118.32.vmem",
   // Path to a VMEM file containing the contents of rom_ctrl1's boot ROM,
   // which will be baked into the FPGA bitstream.
-  parameter RomCtrl1BootRomInitFile = "rom_ctrl1_fpga_cw340.32.vmem",
+  parameter RomCtrl1BootRomInitFile = "rom_ctrl1_fpga_vcu118.32.vmem",
   // Path to a VMEM file containing the contents of the emulated OTP, which
   // will be baked into the FPGA bitstream.
-  parameter OtpMacroMemInitFile = "otp_img_fpga_cw340.vmem"
+  parameter OtpMacroMemInitFile = "otp_img_fpga_vcu118.vmem"
 ) (
   // Dedicated Pads
   inout POR_N, // Manual Pad
@@ -104,8 +104,6 @@ module chip_darjeeling_cw340 #(
   inout SOC_GPO10, // Dedicated Pad for soc_proxy_soc_gpo
   inout SOC_GPO11, // Dedicated Pad for soc_proxy_soc_gpo
   inout IO_CLK, // Manual Pad
-  inout IO_CLKOUT, // Manual Pad
-  inout IO_TRIGGER, // Manual Pad
 
   // Muxed Pads
   inout MIO0, // MIO Pad 0
@@ -325,7 +323,7 @@ module chip_darjeeling_cw340 #(
   logic [pinmux_reg_pkg::NDioPads-1:0] dio_in;
 
   logic [pinmux_reg_pkg::NMioPads-1:0] mio_in_raw;
-  logic                         [81:0] dio_in_raw;
+  logic                         [79:0] dio_in_raw;
 
   logic unused_mio_in_raw;
   logic unused_dio_in_raw;
@@ -340,8 +338,6 @@ module chip_darjeeling_cw340 #(
   logic manual_in_jtag_tdo, manual_out_jtag_tdo, manual_oe_jtag_tdo;
   logic manual_in_jtag_trst_n, manual_out_jtag_trst_n, manual_oe_jtag_trst_n;
   logic manual_in_io_clk, manual_out_io_clk, manual_oe_io_clk;
-  logic manual_in_io_clkout, manual_out_io_clkout, manual_oe_io_clkout;
-  logic manual_in_io_trigger, manual_out_io_trigger, manual_oe_io_trigger;
 
   pad_attr_t manual_attr_por_n;
   pad_attr_t manual_attr_jtag_tck;
@@ -350,8 +346,6 @@ module chip_darjeeling_cw340 #(
   pad_attr_t manual_attr_jtag_tdo;
   pad_attr_t manual_attr_jtag_trst_n;
   pad_attr_t manual_attr_io_clk;
-  pad_attr_t manual_attr_io_clkout;
-  pad_attr_t manual_attr_io_trigger;
 
   /////////////////////////
   // Stubbed pad tie-off //
@@ -371,11 +365,9 @@ module chip_darjeeling_cw340 #(
   padring #(
     // Padring specific counts may differ from pinmux config due
     // to custom, stubbed or added pads.
-    .NDioPads(82),
+    .NDioPads(80),
     .NMioPads(12),
     .DioPadType ({
-      BidirStd, // IO_TRIGGER
-      BidirStd, // IO_CLKOUT
       InputStd, // IO_CLK
       BidirStd, // SOC_GPO11
       BidirStd, // SOC_GPO10
@@ -478,8 +470,6 @@ module chip_darjeeling_cw340 #(
     .dio_in_raw_o ( dio_in_raw ),
     // Chip IOs
     .dio_pad_io ({
-      IO_TRIGGER,
-      IO_CLKOUT,
       IO_CLK,
       SOC_GPO11,
       SOC_GPO10,
@@ -579,8 +569,6 @@ module chip_darjeeling_cw340 #(
 
     // Core-facing
     .dio_in_o ({
-        manual_in_io_trigger,
-        manual_in_io_clkout,
         manual_in_io_clk,
         dio_in[DioSocProxySocGpo11],
         dio_in[DioSocProxySocGpo10],
@@ -663,8 +651,6 @@ module chip_darjeeling_cw340 #(
         manual_in_por_n
       }),
     .dio_out_i ({
-        manual_out_io_trigger,
-        manual_out_io_clkout,
         manual_out_io_clk,
         dio_out[DioSocProxySocGpo11],
         dio_out[DioSocProxySocGpo10],
@@ -747,8 +733,6 @@ module chip_darjeeling_cw340 #(
         manual_out_por_n
       }),
     .dio_oe_i ({
-        manual_oe_io_trigger,
-        manual_oe_io_clkout,
         manual_oe_io_clk,
         dio_oe[DioSocProxySocGpo11],
         dio_oe[DioSocProxySocGpo10],
@@ -831,8 +815,6 @@ module chip_darjeeling_cw340 #(
         manual_oe_por_n
       }),
     .dio_attr_i ({
-        manual_attr_io_trigger,
-        manual_attr_io_clkout,
         manual_attr_io_clk,
         dio_attr[DioSocProxySocGpo11],
         dio_attr[DioSocProxySocGpo10],
@@ -1076,14 +1058,27 @@ module chip_darjeeling_cw340 #(
   // IO_CLK and vcu118's 90MHz IO_CLK (EMCCLK) both produce the identical
   // 1200MHz VCO and therefore identical 24MHz main/io and 250kHz aon output
   // frequencies (see clkgen_xil_ultrascale.sv).
+  // vcu118's IO_CLK lands on the board's dedicated EMCCLK pin, which is not
+  // one of the device's regular clock-capable (MRCC/SRCC) I/O pins with a
+  // dedicated route to the clocking backbone -- feeding it straight into the
+  // MMCM's CLKIN1 fails Vivado's placer (Place 30-681: "Sub-optimal
+  // placement for a global clock-capable IO pin and MMCM pair"). Xilinx's
+  // own suggested workaround is to insert a BUFG between the IO and the
+  // MMCM, unlike cw340's IO_CLK, which is a genuine clock-capable pin and
+  // needs no such buffering.
+  logic io_clk_buf;
+  BUFG u_io_clk_bufg (
+    .I(manual_in_io_clk),
+    .O(io_clk_buf)
+  );
   logic clk_main, clk_io, clk_usb_48mhz, clk_aon, rst_n;
   clkgen_xil_ultrascale #(
     .AddClkBuf(0),
-    .ClkInPeriod(10.0),
-    .DivClkDivide(1),
-    .ClkFbOutMultF(12.0)
+    .ClkInPeriod(11.111),
+    .DivClkDivide(3),
+    .ClkFbOutMultF(40.0)
   ) u_clkgen (
-    .clk_i(manual_in_io_clk),
+    .clk_i(io_clk_buf),
     .rst_ni(manual_in_por_n),
     .clk_main_o(clk_main),
     .clk_io_o(clk_io),
@@ -1124,7 +1119,7 @@ module chip_darjeeling_cw340 #(
     .sns_clks_i            ( clkmgr_clocks ),
     .sns_rsts_i            ( rstmgr_resets ),
     .sns_spi_ext_clk_i     ( sck_monitor   ),
-    // clocks' oscillator bypass for cw340
+    // clocks' oscillator bypass for vcu118
     .clk_osc_byp_i         ( clks_osc_byp ),
     // tlul
     .tl_i                  ( ast_tl_req ),
@@ -1418,16 +1413,6 @@ module chip_darjeeling_cw340 #(
   assign manual_oe_io_clk = 1'b0;
   assign manual_attr_io_clk = '0;
 
-  // Reserved for later ChipWhisperer SCA/FI use (see the 'cw340' target in
-  // hw/top_darjeeling/data/top_darjeeling.hjson); left as unused, undriven
-  // bidirectional pads for v1 bring-up. VCU118 has no ChipWhisperer capture
-  // hardware attached, so its target doesn't add these pads at all.
-  assign manual_out_io_clkout = 1'b0;
-  assign manual_oe_io_clkout = 1'b0;
-  assign manual_attr_io_clkout = '0;
-  assign manual_out_io_trigger = 1'b0;
-  assign manual_oe_io_trigger = 1'b0;
-  assign manual_attr_io_trigger = '0;
 
   // The power manager waits until the external reset request is removed by the SoC before
   // proceeding to boot after an internal reset request. DV may also drive this signal briefly and

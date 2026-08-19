@@ -22,6 +22,7 @@ load(
     _fpga_cw305 = "fpga_cw305",
     _fpga_cw340 = "fpga_cw340",
     _fpga_params = "fpga_params",
+    _fpga_vcu118 = "fpga_vcu118",
 )
 load(
     "@lowrisc_opentitan//rules/opentitan:hw.bzl",
@@ -84,6 +85,7 @@ opentitan_transition = _opentitan_transition
 opentitan_binary_blob = _opentitan_binary_blob
 fpga_cw305 = _fpga_cw305
 fpga_cw340 = _fpga_cw340
+fpga_vcu118 = _fpga_vcu118
 fpga_params = _fpga_params
 
 silicon = _silicon

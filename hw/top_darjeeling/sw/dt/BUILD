@@ -10,6 +10,7 @@ TARGETS = [
     "sim_dv",
     "sim_verilator",
     "fpga_cw340",
+    "fpga_vcu118",
 ]
 
 [

@@ -71,6 +71,12 @@ typedef enum device_type {
    * independently of the RTL.
    */
   kDeviceSimQemu = 6,
+  /**
+   * Represents the "AMD/Xilinx VCU118 FPGA" device, i.e. the Virtex
+   * UltraScale+ eval board used for darjeeling prototyping, containing a
+   * Xilinx FPGA.
+   */
+  kDeviceFpgaVcu118 = 7,
 } device_type_t;
 
 /**
